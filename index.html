@@ -1306,6 +1306,63 @@
   }
   .help-footer span { font-size: 0.6rem; color: var(--steel-light); letter-spacing: 0.1em; font-family: 'Share Tech Mono', monospace; }
 
+  .x-sep-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .x-sep-toggle input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--brass-dark);
+    border-radius: 2px;
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.1s;
+  }
+
+  .x-sep-toggle input[type="checkbox"]:checked {
+    background: var(--amber);
+    border-color: var(--brass);
+  }
+
+  .x-sep-toggle input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: -2px;
+    left: 1px;
+    font-size: 0.65rem;
+    color: var(--bakelite);
+    font-weight: bold;
+  }
+
+  .x-sep-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--brass);
+  }
+
+  .x-sep-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--amber);
+    letter-spacing: 0.06em;
+    margin-top: 5px;
+    padding: 3px 6px;
+    background: rgba(255,183,0,0.06);
+    border-left: 2px solid var(--amber);
+    border-radius: 0 2px 2px 0;
+  }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
@@ -1451,11 +1508,16 @@
   <div class="tape-section">
     <div class="tape-box">
       <div class="tape-box-label">PLAINTEXT EINGABE / INPUT</div>
-      <textarea class="input-area" id="plain-input" placeholder="Type message here or use keyboard above..." oninput="encryptTextarea()"></textarea>
+      <textarea class="input-area" id="plain-input" placeholder="Type message here or use keyboard above. Spaces become X separators when enabled." oninput="encryptTextarea()"></textarea>
       <div class="tape-controls no-print">
         <button class="action-btn" onclick="encryptTextarea()">ENCRYPT/DECRYPT</button>
         <button class="action-btn danger" onclick="clearAll()">CLEAR</button>
+        <label class="x-sep-toggle" title="Historical practice: German operators used X as a word separator since Enigma had no space key">
+          <input type="checkbox" id="x-separator" onchange="encryptTextarea()">
+          <span class="x-sep-label">X WORD SEP.</span>
+        </label>
       </div>
+      <div class="x-sep-hint" id="x-sep-hint" style="display:none;">Spaces → X  ·  Historical German operator practice (e.g. PANZERXANGRIFFXBEGINNT)</div>
     </div>
     <div class="tape-box">
       <div class="tape-box-label">CHIFFRE AUSGABE / OUTPUT</div>
@@ -1631,9 +1693,9 @@
             <div class="cb-field">
               <label class="cb-label">RING SETTINGS</label>
               <div class="cb-rotor-row">
-                <input type="number" class="cb-input cb-pos" id="cb-ring-0" min="1" max="26" value="1">
-                <input type="number" class="cb-input cb-pos" id="cb-ring-1" min="1" max="26" value="1">
-                <input type="number" class="cb-input cb-pos" id="cb-ring-2" min="1" max="26" value="1">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-0" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-1" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-2" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
               </div>
             </div>
           </div>
@@ -1980,6 +2042,13 @@ function buildKeyboard() {
       const keyEl = document.getElementById(`key-${letter}`);
       if (keyEl) keyEl.classList.add('pressed');
     }
+    // Space bar types X when separator mode is on
+    if (e.key === ' ' && document.getElementById('x-separator').checked) {
+      e.preventDefault();
+      pressKey('X');
+      const keyEl = document.getElementById('key-X');
+      if (keyEl) { keyEl.classList.add('pressed'); setTimeout(() => keyEl.classList.remove('pressed'), 120); }
+    }
     if (e.key === 'Backspace') {
       e.preventDefault();
       backspaceInput();
@@ -2202,15 +2271,21 @@ function encryptTextarea() {
 }
 
 function recomputeFromScratch() {
-  // Reset rotor to initial saved positions — not ideal, so instead we
-  // save start positions and re-encrypt from scratch.
-  // For UX: always re-encrypt from current saved start positions.
   const savedPositions = [...startPositions];
   rotorPositions = [...savedPositions];
   updateAllRotorDisplays();
 
   const inputEl = document.getElementById('plain-input');
-  const text = inputEl.value.toUpperCase().replace(/[^A-Z]/g, '');
+  const useXSep = document.getElementById('x-separator').checked;
+
+  // Show/hide hint
+  document.getElementById('x-sep-hint').style.display = useXSep ? 'block' : 'none';
+
+  // Convert spaces to X if separator mode is on, then strip non-alpha
+  let raw = inputEl.value.toUpperCase();
+  if (useXSep) raw = raw.replace(/ +/g, 'X');
+  const text = raw.replace(/[^A-Z]/g, '');
+
   const outputEl = document.getElementById('cipher-output');
   outputEl.dataset.raw = '';
 
