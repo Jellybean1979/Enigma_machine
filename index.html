@@ -748,6 +748,68 @@
   }
   .print-cipher-btn:hover { filter: brightness(1.2); }
 
+  .export-btn {
+    background: linear-gradient(180deg, #1a3a1a 0%, #0e2010 100%);
+    border-color: #3a6a3a;
+    color: #88dd88;
+  }
+  .export-btn:hover { filter: brightness(1.2); }
+
+  .export-modal { max-width: 640px !important; }
+  .export-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+  .export-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--brass-dark);
+    background: rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
+  .export-tab {
+    background: transparent;
+    border: none;
+    border-right: 1px solid rgba(184,134,11,0.2);
+    color: var(--steel-light);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .export-tab:hover { color: var(--brass); background: rgba(184,134,11,0.05); }
+  .export-tab.active { color: var(--amber); border-bottom: 2px solid var(--amber); background: rgba(255,183,0,0.05); }
+
+  .export-content { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .export-content.hidden { display: none; }
+
+  .export-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--steel-light);
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+
+  .export-textarea {
+    flex: 1;
+    min-height: 180px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 3px;
+    color: #a0ffcc;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    padding: 12px;
+    resize: none;
+    outline: none;
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    cursor: text;
+  }
+  .export-textarea-plain { color: var(--cream); }
+  .export-textarea-tall { min-height: 260px; }
+  .export-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
   /* CODEBOOK BUTTON */
   .codebook-btn {
     background: linear-gradient(180deg, #1a2a4a 0%, #0d1828 100%);
@@ -1388,6 +1450,7 @@
     <button class="action-btn" onclick="loadDemoMessage()">DEMO MESSAGE</button>
     <button class="action-btn" onclick="printMessage('full')">🖨 PRINT</button>
     <button class="action-btn print-cipher-btn" onclick="printMessage('cipher')">🖨 CIPHER ONLY</button>
+    <button class="action-btn export-btn" onclick="showExportSettings()">⬇ EXPORT SETTINGS</button>
     <button class="action-btn codebook-btn" onclick="showCodebook()">📋 SCHLÜSSELHEFT</button>
     <button class="action-btn help-btn" onclick="showHelp()">? HELP / HISTORY</button>
   </div>
@@ -1396,6 +1459,64 @@
     To decode: set rotors to same start position as encoding, then type (or paste) cipher text. The Enigma is self-reciprocal.
   </div>
 
+</div>
+
+<!-- EXPORT SETTINGS MODAL -->
+<div id="export-overlay" class="help-overlay" onclick="closeExportOutside(event)">
+  <div class="help-modal export-modal">
+    <div class="help-header">
+      <div class="help-title-block">
+        <div class="help-eagle">⬇</div>
+        <div>
+          <h2 class="help-title">EXPORT CURRENT SETTINGS</h2>
+          <div class="help-subtitle">Maschinenschlüssel · Current Machine Configuration</div>
+        </div>
+      </div>
+      <button class="help-close" onclick="closeExportSettings()">✕ CLOSE</button>
+    </div>
+
+    <div class="export-body">
+
+      <div class="export-tabs">
+        <button class="export-tab active" onclick="switchExportTab('json', this)">JSON FORMAT</button>
+        <button class="export-tab" onclick="switchExportTab('plaintext', this)">PLAINTEXT FORMAT</button>
+        <button class="export-tab" onclick="switchExportTab('both', this)">BOTH</button>
+      </div>
+
+      <div class="export-content" id="export-tab-json">
+        <div class="export-label">Machine settings as JSON — import directly into the Schlüsselheft codebook</div>
+        <textarea class="export-textarea" id="export-json-text" readonly onclick="this.select()"></textarea>
+        <div class="export-actions">
+          <button class="action-btn" onclick="copyExport('export-json-text')">⧉ COPY</button>
+          <button class="action-btn" onclick="downloadExport('json')">⬇ DOWNLOAD .json</button>
+        </div>
+      </div>
+
+      <div class="export-content hidden" id="export-tab-plaintext">
+        <div class="export-label">Human-readable plaintext — share with another operator to configure their machine</div>
+        <textarea class="export-textarea export-textarea-plain" id="export-plain-text" readonly onclick="this.select()"></textarea>
+        <div class="export-actions">
+          <button class="action-btn" onclick="copyExport('export-plain-text')">⧉ COPY</button>
+          <button class="action-btn" onclick="downloadExport('txt')">⬇ DOWNLOAD .txt</button>
+        </div>
+      </div>
+
+      <div class="export-content hidden" id="export-tab-both">
+        <div class="export-label">Both formats combined — full record</div>
+        <textarea class="export-textarea export-textarea-tall" id="export-both-text" readonly onclick="this.select()"></textarea>
+        <div class="export-actions">
+          <button class="action-btn" onclick="copyExport('export-both-text')">⧉ COPY</button>
+          <button class="action-btn" onclick="downloadExport('both')">⬇ DOWNLOAD .txt</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="help-footer">
+      <span>Settings reflect the machine's current state at time of opening this dialog</span>
+      <button class="action-btn" onclick="closeExportSettings()">CLOSE</button>
+    </div>
+  </div>
 </div>
 
 <!-- CODEBOOK MODAL (Schlüsselheft) -->
@@ -1471,9 +1592,9 @@
             <div class="cb-field">
               <label class="cb-label">START POSITIONS</label>
               <div class="cb-rotor-row">
-                <input type="text" class="cb-input cb-pos" id="cb-pos-0" maxlength="1" placeholder="A">
-                <input type="text" class="cb-input cb-pos" id="cb-pos-1" maxlength="1" placeholder="A">
-                <input type="text" class="cb-input cb-pos" id="cb-pos-2" maxlength="1" placeholder="A">
+                <input type="text" class="cb-input cb-pos" id="cb-pos-0" maxlength="1" placeholder="A" onfocus="this.select()" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'')">
+                <input type="text" class="cb-input cb-pos" id="cb-pos-1" maxlength="1" placeholder="A" onfocus="this.select()" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'')">
+                <input type="text" class="cb-input cb-pos" id="cb-pos-2" maxlength="1" placeholder="A" onfocus="this.select()" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'')">
               </div>
             </div>
             <div class="cb-field">
@@ -2317,6 +2438,119 @@ function stepRotor(index, direction) {
   const drum = document.getElementById(`drum-${index}`);
   drum.classList.add('spinning');
   setTimeout(() => drum.classList.remove('spinning'), 150);
+}
+
+// ===== EXPORT SETTINGS =====
+function buildSettingsJSON() {
+  const pairs = {};
+  Object.entries(plugboardPairs).forEach(([a,b]) => { if (a < b) pairs[a] = b; });
+  return {
+    rotorTypes,
+    rotorPositions: rotorPositions.map(p => ALPHABET[p]),
+    ringSettings: ringSettings.map(r => r + 1),
+    reflector: `UKW-${selectedReflector}`,
+    plugboardPairs: pairs,
+  };
+}
+
+function buildSettingsPlaintext() {
+  const pos = startPositions.map(p => ALPHABET[p]).join('');
+  const rings = ringSettings.map(r => r + 1).join(' - ');
+  const pairs = Object.entries(plugboardPairs).filter(([a,b]) => a < b).map(([a,b]) => `${a}↔${b}`).join('  ') || 'None';
+  const date = new Date().toLocaleString();
+  return [
+    '╔══════════════════════════════════════════╗',
+    '║    ENIGMA — MASCHINENSCHLÜSSEL           ║',
+    '║    Machine Key Settings                  ║',
+    '╚══════════════════════════════════════════╝',
+    '',
+    `  Generated : ${date}`,
+    '',
+    '  ── ROTORS (Walzen) ──────────────────────',
+    `  Order (L→R)  : ${rotorTypes.join(' — ')}`,
+    `  Positions    : ${pos}  (${startPositions.map(p=>ALPHABET[p]).join(', ')})`,
+    `  Ring Settings: ${rings}`,
+    '',
+    '  ── REFLECTOR (Umkehrwalze) ──────────────',
+    `  Reflector    : UKW-${selectedReflector}`,
+    '',
+    '  ── PLUGBOARD (Steckerbrett) ─────────────',
+    `  Pairs        : ${pairs}`,
+    '',
+    '══════════════════════════════════════════',
+    '  OPERATOR INSTRUCTIONS:',
+    '  Set the receiving machine to these exact',
+    '  settings before decoding transmissions.',
+    '══════════════════════════════════════════',
+  ].join('\n');
+}
+
+function showExportSettings() {
+  document.getElementById('export-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  const json = JSON.stringify(buildSettingsJSON(), null, 2);
+  const plain = buildSettingsPlaintext();
+  const both = '=== JSON ===\n\n' + json + '\n\n\n=== PLAINTEXT ===\n\n' + plain;
+
+  document.getElementById('export-json-text').value = json;
+  document.getElementById('export-plain-text').value = plain;
+  document.getElementById('export-both-text').value = both;
+
+  // Reset to JSON tab
+  document.querySelectorAll('.export-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.export-content').forEach(c => c.classList.add('hidden'));
+  document.querySelector('.export-tab').classList.add('active');
+  document.getElementById('export-tab-json').classList.remove('hidden');
+}
+
+function closeExportSettings() {
+  document.getElementById('export-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeExportOutside(event) {
+  if (event.target === document.getElementById('export-overlay')) closeExportSettings();
+}
+
+function switchExportTab(tab, btn) {
+  document.querySelectorAll('.export-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.export-content').forEach(c => c.classList.add('hidden'));
+  btn.classList.add('active');
+  document.getElementById(`export-tab-${tab}`).classList.remove('hidden');
+}
+
+function copyExport(id) {
+  const el = document.getElementById(id);
+  el.select();
+  document.execCommand('copy');
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '✔ COPIED';
+  setTimeout(() => btn.textContent = orig, 1800);
+}
+
+function downloadExport(format) {
+  let content, filename, type;
+  if (format === 'json') {
+    content = document.getElementById('export-json-text').value;
+    filename = `enigma_settings_${new Date().toISOString().slice(0,10)}.json`;
+    type = 'application/json';
+  } else if (format === 'txt') {
+    content = document.getElementById('export-plain-text').value;
+    filename = `enigma_settings_${new Date().toISOString().slice(0,10)}.txt`;
+    type = 'text/plain';
+  } else {
+    content = document.getElementById('export-both-text').value;
+    filename = `enigma_settings_${new Date().toISOString().slice(0,10)}_full.txt`;
+    type = 'text/plain';
+  }
+  const blob = new Blob([content], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 // ===== CODEBOOK (SCHLÜSSELHEFT) =====
