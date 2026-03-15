@@ -741,6 +741,300 @@
     letter-spacing: 0.05em;
   }
 
+  /* CODEBOOK BUTTON */
+  .codebook-btn {
+    background: linear-gradient(180deg, #1a2a4a 0%, #0d1828 100%);
+    border-color: #2a4a7a;
+    color: #88bbff;
+    text-shadow: 0 0 6px rgba(100,160,255,0.4);
+  }
+  .codebook-btn:hover { filter: brightness(1.2); box-shadow: 0 0 10px rgba(100,160,255,0.2); }
+
+  /* CODEBOOK MODAL OVERRIDES */
+  .codebook-modal { max-width: 980px !important; }
+
+  .cb-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* LIST PANEL */
+  .cb-list-panel {
+    width: 240px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--brass-dark);
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .cb-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(184,134,11,0.2);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--brass);
+    background: rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
+
+  .cb-count {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--steel-light);
+    letter-spacing: 0.05em;
+  }
+
+  .cb-entry-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px;
+  }
+
+  .cb-empty {
+    text-align: center;
+    padding: 20px 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--steel-light);
+    line-height: 1.8;
+    opacity: 0.6;
+  }
+
+  .cb-entry {
+    background: rgba(184,134,11,0.06);
+    border: 1px solid rgba(184,134,11,0.15);
+    border-radius: 3px;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: all 0.12s;
+    position: relative;
+  }
+
+  .cb-entry:hover { border-color: rgba(184,134,11,0.4); background: rgba(184,134,11,0.12); }
+  .cb-entry.active { border-color: var(--amber); background: rgba(255,183,0,0.08); }
+
+  .cb-entry-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.72rem;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 20px;
+  }
+
+  .cb-entry-meta {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--steel-light);
+    letter-spacing: 0.05em;
+  }
+
+  .cb-entry-actions {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    gap: 3px;
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .cb-entry:hover .cb-entry-actions { opacity: 1; }
+
+  .cb-entry-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.4);
+    color: var(--steel-light);
+    font-size: 0.55rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+  }
+  .cb-entry-btn:hover { color: var(--cream); border-color: var(--brass-dark); }
+  .cb-entry-btn.load-btn:hover { color: #88ff88; border-color: #44aa44; }
+  .cb-entry-btn.del-btn:hover { color: #ff8888; border-color: var(--red); }
+
+  .cb-list-actions {
+    padding: 8px;
+    border-top: 1px solid rgba(184,134,11,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .cb-list-actions .action-btn {
+    font-size: 0.62rem;
+    padding: 5px 8px;
+    text-align: center;
+  }
+
+  /* EDITOR PANEL */
+  .cb-editor-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .cb-new-btn {
+    background: transparent;
+    border: 1px solid rgba(184,134,11,0.3);
+    color: var(--brass);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+    transition: all 0.1s;
+  }
+  .cb-new-btn:hover { border-color: var(--brass); color: var(--amber); }
+
+  .cb-form {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 18px;
+  }
+
+  .cb-field-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .cb-field { flex: 1; min-width: 120px; }
+  .cb-field-sm { flex: 0 0 140px; }
+
+  .cb-label {
+    display: block;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--brass);
+    margin-bottom: 4px;
+  }
+
+  .cb-input {
+    width: 100%;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 3px;
+    color: var(--cream);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    padding: 5px 8px;
+    outline: none;
+    transition: border-color 0.1s;
+    letter-spacing: 0.06em;
+  }
+  .cb-input:focus { border-color: var(--brass); }
+
+  .cb-pos { text-align: center; text-transform: uppercase; width: 48px !important; flex-shrink: 0; }
+
+  .cb-select {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 3px;
+    color: var(--brass-light);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    padding: 5px 6px;
+    cursor: pointer;
+    outline: none;
+    width: 60px;
+  }
+
+  .cb-select-full { width: 100%; }
+
+  .cb-rotor-row { display: flex; gap: 6px; align-items: center; }
+
+  .cb-group-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    color: var(--steel-light);
+    border-top: 1px solid rgba(184,134,11,0.15);
+    padding-top: 10px;
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+
+  .cb-plugboard-editor {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .cb-plug-sockets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .cb-socket-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .cb-socket-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.55rem;
+    color: var(--brass);
+  }
+
+  .cb-socket {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #0a0806;
+    border: 2px solid var(--brass-dark);
+    cursor: pointer;
+    transition: all 0.12s;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.8);
+  }
+  .cb-socket:hover { border-color: var(--brass-light); }
+  .cb-socket.cb-selected { border-color: var(--amber); box-shadow: 0 0 6px rgba(255,183,0,0.6), inset 0 2px 3px rgba(0,0,0,0.8); }
+  .cb-socket.cb-plugged {
+    background: radial-gradient(circle at 40% 35%, #afffda 0%, #00ff88 40%, #00aa55 100%);
+    border-color: #00ff88;
+    box-shadow: 0 0 6px rgba(0,255,136,0.8), 0 0 14px rgba(0,255,136,0.4), inset 0 1px 2px rgba(255,255,255,0.3);
+  }
+
+  .cb-plug-info { min-width: 100px; }
+  .cb-plug-pairs-label { font-family: 'Oswald', sans-serif; font-size: 0.6rem; color: var(--brass); letter-spacing: 0.15em; margin-bottom: 4px; }
+  .cb-plug-pairs-display { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: #a0ffcc; line-height: 1.7; }
+
+  .cb-textarea { resize: vertical; min-height: 44px; }
+
+  .cb-form-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(184,134,11,0.15);
+    flex-wrap: wrap;
+  }
+
   /* HELP BUTTON */
   .help-btn {
     background: linear-gradient(180deg, #1a4a2a 0%, #0d2a18 100%);
@@ -1086,8 +1380,7 @@
     <button class="action-btn" onclick="resetRotorPositions()">RESET POSITIONS</button>
     <button class="action-btn" onclick="loadDemoMessage()">DEMO MESSAGE</button>
     <button class="action-btn" onclick="printMessage()">🖨 PRINT</button>
-    <button class="action-btn" onclick="saveSettings()">SAVE SETTINGS</button>
-    <button class="action-btn" onclick="loadSettings()">LOAD SETTINGS</button>
+    <button class="action-btn codebook-btn" onclick="showCodebook()">📋 SCHLÜSSELHEFT</button>
     <button class="action-btn help-btn" onclick="showHelp()">? HELP / HISTORY</button>
   </div>
 
@@ -1095,6 +1388,140 @@
     To decode: set rotors to same start position as encoding, then type (or paste) cipher text. The Enigma is self-reciprocal.
   </div>
 
+</div>
+
+<!-- CODEBOOK MODAL (Schlüsselheft) -->
+<div id="codebook-overlay" class="help-overlay" onclick="closeCodebookOutside(event)">
+  <div class="help-modal codebook-modal">
+
+    <div class="help-header">
+      <div class="help-title-block">
+        <div class="help-eagle">⊞</div>
+        <div>
+          <h2 class="help-title">SCHLÜSSELHEFT — CODEBOOK</h2>
+          <div class="help-subtitle">Geheime Tagesschlüssel · Daily Key Settings Registry</div>
+        </div>
+      </div>
+      <button class="help-close" onclick="closeCodebook()">✕ CLOSE</button>
+    </div>
+
+    <div class="cb-body">
+
+      <!-- LEFT: Entry list -->
+      <div class="cb-list-panel">
+        <div class="cb-panel-header">
+          <span>SAVED KEYS</span>
+          <span id="cb-count" class="cb-count">0 entries</span>
+        </div>
+        <div class="cb-entry-list" id="cb-entry-list">
+          <div class="cb-empty" id="cb-empty">No keys saved yet.<br>Create your first entry →</div>
+        </div>
+        <div class="cb-list-actions">
+          <button class="action-btn" onclick="exportCodebook()">⬇ EXPORT JSON</button>
+          <label class="action-btn" style="cursor:pointer;">⬆ IMPORT JSON<input type="file" accept=".json" style="display:none" onchange="importCodebook(event)"></label>
+          <button class="action-btn danger" onclick="clearAllKeys()">✕ CLEAR ALL</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Editor -->
+      <div class="cb-editor-panel">
+        <div class="cb-panel-header">
+          <span id="cb-editor-title">NEW KEY ENTRY</span>
+          <button class="cb-new-btn" onclick="newKeyEntry()">+ NEW</button>
+        </div>
+
+        <div class="cb-form">
+          <input type="hidden" id="cb-editing-id">
+
+          <div class="cb-field-row">
+            <div class="cb-field">
+              <label class="cb-label">DESIGNATION / NAME</label>
+              <input type="text" class="cb-input" id="cb-name" placeholder="e.g. Day 14 — Gruppe Nord" maxlength="60">
+            </div>
+            <div class="cb-field cb-field-sm">
+              <label class="cb-label">DATE / CODE</label>
+              <input type="text" class="cb-input" id="cb-date" placeholder="e.g. 1944-06-06" maxlength="20">
+            </div>
+          </div>
+
+          <div class="cb-group-label">ROTORS (WALZEN)</div>
+          <div class="cb-field-row">
+            <div class="cb-field">
+              <label class="cb-label">ORDER (L → R)</label>
+              <div class="cb-rotor-row">
+                <select class="cb-select" id="cb-rotor-0">
+                  <option value="I">I</option><option value="II">II</option><option value="III" selected>III</option><option value="IV">IV</option><option value="V">V</option>
+                </select>
+                <select class="cb-select" id="cb-rotor-1">
+                  <option value="I">I</option><option value="II" selected>II</option><option value="III">III</option><option value="IV">IV</option><option value="V">V</option>
+                </select>
+                <select class="cb-select" id="cb-rotor-2">
+                  <option value="I" selected>I</option><option value="II">II</option><option value="III">III</option><option value="IV">IV</option><option value="V">V</option>
+                </select>
+              </div>
+            </div>
+            <div class="cb-field">
+              <label class="cb-label">START POSITIONS</label>
+              <div class="cb-rotor-row">
+                <input type="text" class="cb-input cb-pos" id="cb-pos-0" maxlength="1" placeholder="A">
+                <input type="text" class="cb-input cb-pos" id="cb-pos-1" maxlength="1" placeholder="A">
+                <input type="text" class="cb-input cb-pos" id="cb-pos-2" maxlength="1" placeholder="A">
+              </div>
+            </div>
+            <div class="cb-field">
+              <label class="cb-label">RING SETTINGS</label>
+              <div class="cb-rotor-row">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-0" min="1" max="26" value="1">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-1" min="1" max="26" value="1">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-2" min="1" max="26" value="1">
+              </div>
+            </div>
+          </div>
+
+          <div class="cb-field-row">
+            <div class="cb-field cb-field-sm">
+              <label class="cb-label">REFLECTOR (UKW)</label>
+              <select class="cb-select cb-select-full" id="cb-reflector">
+                <option value="B">UKW-B</option>
+                <option value="C">UKW-C</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cb-group-label">STECKERBRETT (PLUGBOARD PAIRS)</div>
+          <div class="cb-plugboard-editor">
+            <div class="cb-plug-sockets" id="cb-plug-sockets"></div>
+            <div class="cb-plug-info">
+              <div class="cb-plug-pairs-label">ACTIVE PAIRS:</div>
+              <div id="cb-plug-pairs-display" class="cb-plug-pairs-display">None</div>
+              <button class="action-btn danger" onclick="clearCbPlugboard()" style="margin-top:6px;font-size:0.6rem;padding:4px 8px;">CLEAR</button>
+            </div>
+          </div>
+
+          <div class="cb-field">
+            <label class="cb-label">OPERATOR NOTES</label>
+            <textarea class="cb-input cb-textarea" id="cb-notes" placeholder="Operational notes, network designation, frequency, etc." rows="2"></textarea>
+          </div>
+
+          <div class="cb-form-actions">
+            <button class="action-btn" onclick="captureCurrentSettings()">↓ CAPTURE CURRENT MACHINE</button>
+            <button class="action-btn" id="cb-save-btn" onclick="saveKeyEntry()">SAVE ENTRY</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PRINT CODEBOOK area -->
+    <div class="help-footer">
+      <span>Entries stored in browser localStorage · Export JSON to share between machines</span>
+      <div style="display:flex;gap:8px;">
+        <button class="action-btn" onclick="printCodebook()">🖨 PRINT CODEBOOK</button>
+        <button class="action-btn" onclick="closeCodebook()">CLOSE</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <!-- HELP MODAL -->
@@ -1874,6 +2301,397 @@ function stepRotor(index, direction) {
   setTimeout(() => drum.classList.remove('spinning'), 150);
 }
 
+// ===== CODEBOOK (SCHLÜSSELHEFT) =====
+let codebook = JSON.parse(localStorage.getItem('enigma_codebook') || '[]');
+let cbPlugPairs = {};
+let cbPlugSelected = null;
+let cbEditingId = null;
+
+function saveCodebookToStorage() {
+  localStorage.setItem('enigma_codebook', JSON.stringify(codebook));
+}
+
+function showCodebook() {
+  document.getElementById('codebook-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  buildCbPlugboard();
+  renderCodebookList();
+  newKeyEntry();
+}
+
+function closeCodebook() {
+  document.getElementById('codebook-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeCodebookOutside(event) {
+  if (event.target === document.getElementById('codebook-overlay')) closeCodebook();
+}
+
+// Build the mini plugboard inside the codebook editor
+function buildCbPlugboard() {
+  const container = document.getElementById('cb-plug-sockets');
+  container.innerHTML = '';
+  for (const letter of ALPHABET) {
+    const wrap = document.createElement('div');
+    wrap.className = 'cb-socket-wrap';
+    const label = document.createElement('div');
+    label.className = 'cb-socket-label';
+    label.textContent = letter;
+    const socket = document.createElement('div');
+    socket.className = 'cb-socket';
+    socket.id = `cb-socket-${letter}`;
+    socket.onclick = () => clickCbSocket(letter);
+    wrap.appendChild(label);
+    wrap.appendChild(socket);
+    container.appendChild(wrap);
+  }
+  updateCbPlugDisplay();
+}
+
+function clickCbSocket(letter) {
+  if (cbPlugPairs[letter]) { removeCbPlug(letter); return; }
+  if (!cbPlugSelected) {
+    cbPlugSelected = letter;
+    document.getElementById(`cb-socket-${letter}`).classList.add('cb-selected');
+  } else if (cbPlugSelected === letter) {
+    document.getElementById(`cb-socket-${letter}`).classList.remove('cb-selected');
+    cbPlugSelected = null;
+  } else {
+    const a = cbPlugSelected, b = letter;
+    cbPlugPairs[a] = b; cbPlugPairs[b] = a;
+    document.getElementById(`cb-socket-${a}`).classList.remove('cb-selected');
+    document.getElementById(`cb-socket-${a}`).classList.add('cb-plugged');
+    document.getElementById(`cb-socket-${b}`).classList.add('cb-plugged');
+    cbPlugSelected = null;
+    updateCbPlugDisplay();
+  }
+}
+
+function removeCbPlug(letter) {
+  const paired = cbPlugPairs[letter];
+  if (paired) {
+    delete cbPlugPairs[letter]; delete cbPlugPairs[paired];
+    document.getElementById(`cb-socket-${letter}`).classList.remove('cb-plugged');
+    document.getElementById(`cb-socket-${paired}`).classList.remove('cb-plugged');
+    updateCbPlugDisplay();
+  }
+}
+
+function clearCbPlugboard() {
+  cbPlugPairs = {}; cbPlugSelected = null;
+  document.querySelectorAll('.cb-socket').forEach(s => s.classList.remove('cb-plugged','cb-selected'));
+  updateCbPlugDisplay();
+}
+
+function updateCbPlugDisplay() {
+  const el = document.getElementById('cb-plug-pairs-display');
+  const seen = new Set();
+  const pairs = [];
+  for (const [a,b] of Object.entries(cbPlugPairs)) {
+    const key = [a,b].sort().join('');
+    if (!seen.has(key)) { seen.add(key); pairs.push(`${a}↔${b}`); }
+  }
+  el.textContent = pairs.length ? pairs.join('  ') : 'None';
+}
+
+// Load plugboard into cb editor
+function setCbPlugboard(pairs) {
+  clearCbPlugboard();
+  cbPlugPairs = {...pairs};
+  for (const [a,b] of Object.entries(cbPlugPairs)) {
+    const sock = document.getElementById(`cb-socket-${a}`);
+    if (sock) sock.classList.add('cb-plugged');
+  }
+  updateCbPlugDisplay();
+}
+
+// New blank entry form
+function newKeyEntry() {
+  cbEditingId = null;
+  document.getElementById('cb-editor-title').textContent = 'NEW KEY ENTRY';
+  document.getElementById('cb-save-btn').textContent = 'SAVE ENTRY';
+  document.getElementById('cb-editing-id').value = '';
+  document.getElementById('cb-name').value = '';
+  document.getElementById('cb-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('cb-rotor-0').value = 'III';
+  document.getElementById('cb-rotor-1').value = 'II';
+  document.getElementById('cb-rotor-2').value = 'I';
+  document.getElementById('cb-pos-0').value = 'A';
+  document.getElementById('cb-pos-1').value = 'A';
+  document.getElementById('cb-pos-2').value = 'A';
+  document.getElementById('cb-ring-0').value = 1;
+  document.getElementById('cb-ring-1').value = 1;
+  document.getElementById('cb-ring-2').value = 1;
+  document.getElementById('cb-reflector').value = 'B';
+  document.getElementById('cb-notes').value = '';
+  clearCbPlugboard();
+  document.querySelectorAll('.cb-entry').forEach(e => e.classList.remove('active'));
+}
+
+// Capture the current machine state into the editor
+function captureCurrentSettings() {
+  document.getElementById('cb-rotor-0').value = rotorTypes[0];
+  document.getElementById('cb-rotor-1').value = rotorTypes[1];
+  document.getElementById('cb-rotor-2').value = rotorTypes[2];
+  document.getElementById('cb-pos-0').value = ALPHABET[startPositions[0]];
+  document.getElementById('cb-pos-1').value = ALPHABET[startPositions[1]];
+  document.getElementById('cb-pos-2').value = ALPHABET[startPositions[2]];
+  document.getElementById('cb-ring-0').value = ringSettings[0] + 1;
+  document.getElementById('cb-ring-1').value = ringSettings[1] + 1;
+  document.getElementById('cb-ring-2').value = ringSettings[2] + 1;
+  document.getElementById('cb-reflector').value = selectedReflector;
+  setCbPlugboard(plugboardPairs);
+  if (!document.getElementById('cb-name').value) {
+    document.getElementById('cb-name').value = `Captured ${new Date().toLocaleString()}`;
+  }
+}
+
+// Save the form as a codebook entry
+function saveKeyEntry() {
+  const name = document.getElementById('cb-name').value.trim();
+  if (!name) { document.getElementById('cb-name').focus(); return; }
+
+  const posVal = (id) => {
+    const v = document.getElementById(id).value.toUpperCase().replace(/[^A-Z]/g,'');
+    return v ? ALPHABET.indexOf(v[0]) : 0;
+  };
+
+  const entry = {
+    id: cbEditingId || Date.now().toString(),
+    name,
+    date: document.getElementById('cb-date').value,
+    rotorTypes: [
+      document.getElementById('cb-rotor-0').value,
+      document.getElementById('cb-rotor-1').value,
+      document.getElementById('cb-rotor-2').value,
+    ],
+    rotorPositions: [posVal('cb-pos-0'), posVal('cb-pos-1'), posVal('cb-pos-2')],
+    ringSettings: [
+      parseInt(document.getElementById('cb-ring-0').value) - 1,
+      parseInt(document.getElementById('cb-ring-1').value) - 1,
+      parseInt(document.getElementById('cb-ring-2').value) - 1,
+    ],
+    reflector: document.getElementById('cb-reflector').value,
+    plugboardPairs: {...cbPlugPairs},
+    notes: document.getElementById('cb-notes').value.trim(),
+    created: cbEditingId ? undefined : new Date().toISOString(),
+  };
+
+  const idx = codebook.findIndex(e => e.id === entry.id);
+  if (idx >= 0) { codebook[idx] = entry; }
+  else { codebook.unshift(entry); }
+
+  saveCodebookToStorage();
+  renderCodebookList();
+  editKeyEntry(entry.id);
+}
+
+// Render the entry list
+function renderCodebookList() {
+  const list = document.getElementById('cb-entry-list');
+  const empty = document.getElementById('cb-empty');
+  const count = document.getElementById('cb-count');
+
+  count.textContent = `${codebook.length} entr${codebook.length === 1 ? 'y' : 'ies'}`;
+
+  if (codebook.length === 0) {
+    empty.style.display = 'block';
+    list.innerHTML = '';
+    list.appendChild(empty);
+    return;
+  }
+  empty.style.display = 'none';
+  list.innerHTML = '';
+
+  codebook.forEach(entry => {
+    const pairs = Object.entries(entry.plugboardPairs||{}).filter(([a,b])=>a<b).map(([a,b])=>a+b).join(' ');
+    const pos = entry.rotorPositions.map(p=>ALPHABET[p]).join('');
+    const div = document.createElement('div');
+    div.className = 'cb-entry' + (entry.id === cbEditingId ? ' active' : '');
+    div.id = `cb-entry-${entry.id}`;
+    div.innerHTML = `
+      <div class="cb-entry-name">${entry.name}</div>
+      <div class="cb-entry-meta">${entry.date || ''} · ${entry.rotorTypes.join('-')} · ${pos}</div>
+      <div class="cb-entry-meta">${pairs ? 'Plugs: '+pairs : 'No plugs'}</div>
+      <div class="cb-entry-actions">
+        <button class="cb-entry-btn load-btn" title="Load onto machine" onclick="loadEntryOntoMachine('${entry.id}')">▶</button>
+        <button class="cb-entry-btn" title="Edit" onclick="editKeyEntry('${entry.id}')">✎</button>
+        <button class="cb-entry-btn del-btn" title="Delete" onclick="deleteKeyEntry('${entry.id}')">✕</button>
+      </div>`;
+    div.onclick = (e) => { if (!e.target.closest('.cb-entry-btn')) editKeyEntry(entry.id); };
+    list.appendChild(div);
+  });
+}
+
+// Edit an existing entry
+function editKeyEntry(id) {
+  const entry = codebook.find(e => e.id === id);
+  if (!entry) return;
+  cbEditingId = id;
+  document.getElementById('cb-editor-title').textContent = 'EDITING: ' + entry.name.toUpperCase().slice(0,30);
+  document.getElementById('cb-save-btn').textContent = 'UPDATE ENTRY';
+  document.getElementById('cb-name').value = entry.name;
+  document.getElementById('cb-date').value = entry.date || '';
+  document.getElementById('cb-rotor-0').value = entry.rotorTypes[0];
+  document.getElementById('cb-rotor-1').value = entry.rotorTypes[1];
+  document.getElementById('cb-rotor-2').value = entry.rotorTypes[2];
+  document.getElementById('cb-pos-0').value = ALPHABET[entry.rotorPositions[0]];
+  document.getElementById('cb-pos-1').value = ALPHABET[entry.rotorPositions[1]];
+  document.getElementById('cb-pos-2').value = ALPHABET[entry.rotorPositions[2]];
+  document.getElementById('cb-ring-0').value = entry.ringSettings[0] + 1;
+  document.getElementById('cb-ring-1').value = entry.ringSettings[1] + 1;
+  document.getElementById('cb-ring-2').value = entry.ringSettings[2] + 1;
+  document.getElementById('cb-reflector').value = entry.reflector;
+  document.getElementById('cb-notes').value = entry.notes || '';
+  setCbPlugboard(entry.plugboardPairs || {});
+  document.querySelectorAll('.cb-entry').forEach(e => e.classList.remove('active'));
+  const el = document.getElementById(`cb-entry-${id}`);
+  if (el) el.classList.add('active');
+}
+
+// Load an entry directly onto the machine
+function loadEntryOntoMachine(id) {
+  const entry = codebook.find(e => e.id === id);
+  if (!entry) return;
+
+  rotorTypes = [...entry.rotorTypes];
+  rotorPositions = [...entry.rotorPositions];
+  startPositions = [...entry.rotorPositions];
+  ringSettings = [...entry.ringSettings];
+  selectedReflector = entry.reflector;
+  plugboardPairs = {...(entry.plugboardPairs||{})};
+
+  // Update all UI
+  [0,1,2].forEach(i => {
+    document.getElementById(`rotor-select-${i}`).value = rotorTypes[i];
+    document.getElementById(`ring-${i}`).value = ringSettings[i] + 1;
+  });
+  document.getElementById('reflector-select').value = selectedReflector;
+  document.getElementById('reflector-drum').textContent = selectedReflector;
+  updateAllRotorDisplays();
+
+  // Rebuild plugboard
+  document.querySelectorAll('.socket').forEach(s => s.classList.remove('plugged','selected'));
+  Object.entries(plugboardPairs).forEach(([a]) => {
+    const sock = document.getElementById(`socket-${a}`);
+    if (sock) sock.classList.add('plugged');
+  });
+  updatePlugDisplay();
+
+  closeCodebook();
+
+  // Flash confirmation
+  const bar = document.querySelector('.controls-bar');
+  const msg = document.createElement('div');
+  msg.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a4a2a;border:1px solid #00ff88;color:#00ff88;font-family:Oswald,sans-serif;font-size:0.75rem;letter-spacing:0.15em;padding:10px 20px;border-radius:4px;z-index:999;box-shadow:0 0 20px rgba(0,255,136,0.3)';
+  msg.textContent = `✔ LOADED: ${entry.name.toUpperCase()}`;
+  document.body.appendChild(msg);
+  setTimeout(() => msg.remove(), 2500);
+}
+
+function deleteKeyEntry(id) {
+  codebook = codebook.filter(e => e.id !== id);
+  saveCodebookToStorage();
+  if (cbEditingId === id) newKeyEntry();
+  renderCodebookList();
+}
+
+function clearAllKeys() {
+  if (!codebook.length) return;
+  if (!confirm('Delete all codebook entries? This cannot be undone.')) return;
+  codebook = [];
+  saveCodebookToStorage();
+  renderCodebookList();
+  newKeyEntry();
+}
+
+// Export codebook as JSON file
+function exportCodebook() {
+  const blob = new Blob([JSON.stringify(codebook, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `enigma_codebook_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// Import codebook from JSON file
+function importCodebook(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('Invalid format');
+      const merged = [...codebook];
+      imported.forEach(entry => {
+        if (!merged.find(x => x.id === entry.id)) merged.push(entry);
+      });
+      codebook = merged;
+      saveCodebookToStorage();
+      renderCodebookList();
+      alert(`Imported ${imported.length} entr${imported.length===1?'y':'ies'}.`);
+    } catch {
+      alert('Invalid codebook file.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// Print the full codebook
+function printCodebook() {
+  if (!codebook.length) { alert('No entries to print.'); return; }
+
+  const rows = codebook.map(e => {
+    const pos = e.rotorPositions.map(p=>ALPHABET[p]).join('');
+    const rings = e.ringSettings.map(r=>r+1).join('-');
+    const pairs = Object.entries(e.plugboardPairs||{}).filter(([a,b])=>a<b).map(([a,b])=>a+b).join(' ') || '—';
+    return `
+      <tr>
+        <td>${e.date||'—'}</td>
+        <td>${e.name}</td>
+        <td>${e.rotorTypes.join(' · ')}</td>
+        <td>${pos}</td>
+        <td>${rings}</td>
+        <td>UKW-${e.reflector}</td>
+        <td style="letter-spacing:0.1em">${pairs}</td>
+        <td style="font-size:0.75em;color:#555">${e.notes||''}</td>
+      </tr>`;
+  }).join('');
+
+  const win = window.open('', '_blank', 'width=1000,height=600');
+  win.document.write(`
+    <!DOCTYPE html><html><head><title>ENIGMA Schlüsselheft</title>
+    <style>
+      body{font-family:'Courier New',monospace;padding:30px;background:white;color:black;}
+      h1{font-size:1.4rem;letter-spacing:0.4em;border-bottom:3px double black;padding-bottom:8px;margin-bottom:4px;}
+      .class{border:1px solid red;color:red;display:inline-block;padding:2px 10px;font-size:0.65rem;letter-spacing:0.2em;margin-bottom:16px;}
+      table{width:100%;border-collapse:collapse;font-size:0.78rem;}
+      th{background:#111;color:white;padding:6px 8px;text-align:left;letter-spacing:0.1em;font-size:0.7rem;}
+      td{padding:5px 8px;border-bottom:1px solid #ddd;vertical-align:top;}
+      tr:nth-child(even) td{background:#f8f8f8;}
+      .meta{font-size:0.7rem;color:#666;margin-bottom:20px;}
+      @media print{body{padding:15px;}}
+    </style></head><body>
+    <h1>ENIGMA — SCHLÜSSELHEFT</h1>
+    <div class="class">GEHEIME KOMMANDOSACHE</div>
+    <div class="meta">Printed: ${new Date().toLocaleString()} · ${codebook.length} entries</div>
+    <table>
+      <thead><tr>
+        <th>DATE</th><th>DESIGNATION</th><th>ROTORS (L→R)</th>
+        <th>START</th><th>RINGS</th><th>REFLECTOR</th>
+        <th>STECKER PAIRS</th><th>NOTES</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <script>window.onload=function(){window.print();}<\/script>
+    </body></html>`);
+  win.document.close();
+}
+
 // ===== HELP MODAL =====
 function showHelp() {
   document.getElementById('help-overlay').classList.add('active');
@@ -1930,4 +2748,3 @@ updateCommitHash();
 </script>
 </body>
 </html>
-
