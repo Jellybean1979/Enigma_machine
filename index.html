@@ -810,6 +810,26 @@
   .export-textarea-tall { min-height: 260px; }
   .export-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
+  .import-tab { color: #88dd88 !important; border-left: 1px solid rgba(184,134,11,0.3) !important; margin-left: auto; }
+  .import-tab.active { color: #00ff88 !important; border-bottom-color: #00ff88 !important; }
+
+  .import-apply-btn {
+    background: linear-gradient(180deg, #1a4a2a 0%, #0d2a18 100%);
+    border-color: #2a6a3a;
+    color: #00ff88;
+  }
+  .import-apply-btn:hover { filter: brightness(1.2); }
+
+  .import-status {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    min-height: 20px;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .import-status.ok { color: #00ff88; }
+  .import-status.err { color: #ff6666; }
+
   /* CODEBOOK BUTTON */
   .codebook-btn {
     background: linear-gradient(180deg, #1a2a4a 0%, #0d1828 100%);
@@ -1450,7 +1470,7 @@
     <button class="action-btn" onclick="loadDemoMessage()">DEMO MESSAGE</button>
     <button class="action-btn" onclick="printMessage('full')">🖨 PRINT</button>
     <button class="action-btn print-cipher-btn" onclick="printMessage('cipher')">🖨 CIPHER ONLY</button>
-    <button class="action-btn export-btn" onclick="showExportSettings()">⬇ EXPORT SETTINGS</button>
+    <button class="action-btn export-btn" onclick="showExportSettings()">⇅ IMPORT / EXPORT</button>
     <button class="action-btn codebook-btn" onclick="showCodebook()">📋 SCHLÜSSELHEFT</button>
     <button class="action-btn help-btn" onclick="showHelp()">? HELP / HISTORY</button>
   </div>
@@ -1466,10 +1486,10 @@
   <div class="help-modal export-modal">
     <div class="help-header">
       <div class="help-title-block">
-        <div class="help-eagle">⬇</div>
+        <div class="help-eagle">⇅</div>
         <div>
-          <h2 class="help-title">EXPORT CURRENT SETTINGS</h2>
-          <div class="help-subtitle">Maschinenschlüssel · Current Machine Configuration</div>
+          <h2 class="help-title">IMPORT / EXPORT SETTINGS</h2>
+          <div class="help-subtitle">Maschinenschlüssel · Machine Configuration Transfer</div>
         </div>
       </div>
       <button class="help-close" onclick="closeExportSettings()">✕ CLOSE</button>
@@ -1478,13 +1498,14 @@
     <div class="export-body">
 
       <div class="export-tabs">
-        <button class="export-tab active" onclick="switchExportTab('json', this)">JSON FORMAT</button>
-        <button class="export-tab" onclick="switchExportTab('plaintext', this)">PLAINTEXT FORMAT</button>
-        <button class="export-tab" onclick="switchExportTab('both', this)">BOTH</button>
+        <button class="export-tab active" onclick="switchExportTab('json', this)">EXPORT — JSON</button>
+        <button class="export-tab" onclick="switchExportTab('plaintext', this)">EXPORT — PLAINTEXT</button>
+        <button class="export-tab" onclick="switchExportTab('both', this)">EXPORT — BOTH</button>
+        <button class="export-tab import-tab" onclick="switchExportTab('import', this)">⬆ IMPORT JSON</button>
       </div>
 
       <div class="export-content" id="export-tab-json">
-        <div class="export-label">Machine settings as JSON — import directly into the Schlüsselheft codebook</div>
+        <div class="export-label">Machine settings as JSON — copy and paste into the Import tab on another machine</div>
         <textarea class="export-textarea" id="export-json-text" readonly onclick="this.select()"></textarea>
         <div class="export-actions">
           <button class="action-btn" onclick="copyExport('export-json-text')">⧉ COPY</button>
@@ -1493,7 +1514,7 @@
       </div>
 
       <div class="export-content hidden" id="export-tab-plaintext">
-        <div class="export-label">Human-readable plaintext — share with another operator to configure their machine</div>
+        <div class="export-label">Human-readable plaintext — share with another operator to configure their machine manually</div>
         <textarea class="export-textarea export-textarea-plain" id="export-plain-text" readonly onclick="this.select()"></textarea>
         <div class="export-actions">
           <button class="action-btn" onclick="copyExport('export-plain-text')">⧉ COPY</button>
@@ -1510,10 +1531,20 @@
         </div>
       </div>
 
+      <div class="export-content hidden" id="export-tab-import">
+        <div class="export-label">Paste exported JSON below, or load a .json file — this will apply the settings directly to the machine</div>
+        <textarea class="export-textarea export-textarea-plain" id="import-json-text" placeholder='Paste JSON here, e.g. {"rotorTypes":["III","II","I"],...}'></textarea>
+        <div id="import-status" class="import-status"></div>
+        <div class="export-actions">
+          <label class="action-btn" style="cursor:pointer;">📂 LOAD .json FILE<input type="file" accept=".json" style="display:none" onchange="loadImportFile(event)"></label>
+          <button class="action-btn import-apply-btn" onclick="applyImportedSettings()">✔ APPLY TO MACHINE</button>
+        </div>
+      </div>
+
     </div>
 
     <div class="help-footer">
-      <span>Settings reflect the machine's current state at time of opening this dialog</span>
+      <span>Export reflects the machine's current state · Import overwrites all current settings</span>
       <button class="action-btn" onclick="closeExportSettings()">CLOSE</button>
     </div>
   </div>
@@ -2551,6 +2582,93 @@ function downloadExport(format) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+function loadImportFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    document.getElementById('import-json-text').value = e.target.result;
+    setImportStatus('', '');
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function setImportStatus(msg, type) {
+  const el = document.getElementById('import-status');
+  el.textContent = msg;
+  el.className = 'import-status' + (type ? ' ' + type : '');
+}
+
+function applyImportedSettings() {
+  const raw = document.getElementById('import-json-text').value.trim();
+  if (!raw) { setImportStatus('✘ Nothing to import — paste JSON first.', 'err'); return; }
+
+  let s;
+  try { s = JSON.parse(raw); } catch {
+    setImportStatus('✘ Invalid JSON — check the format and try again.', 'err');
+    return;
+  }
+
+  // Validate required fields
+  const validRotors = ['I','II','III','IV','V'];
+  const validRef = ['B','C','UKW-B','UKW-C'];
+  if (!Array.isArray(s.rotorTypes) || s.rotorTypes.length !== 3 ||
+      !s.rotorTypes.every(r => validRotors.includes(r))) {
+    setImportStatus('✘ Invalid rotorTypes — expected array of 3 values from I–V.', 'err'); return;
+  }
+  if (!Array.isArray(s.rotorPositions) || s.rotorPositions.length !== 3) {
+    setImportStatus('✘ Invalid rotorPositions — expected array of 3 letters.', 'err'); return;
+  }
+  if (!Array.isArray(s.ringSettings) || s.ringSettings.length !== 3) {
+    setImportStatus('✘ Invalid ringSettings — expected array of 3 numbers (1–26).', 'err'); return;
+  }
+  if (!s.reflector || !validRef.includes(s.reflector)) {
+    setImportStatus('✘ Invalid reflector — expected "UKW-B" or "UKW-C" (or "B"/"C").', 'err'); return;
+  }
+
+  // Apply
+  rotorTypes = [...s.rotorTypes];
+
+  const parsedPositions = s.rotorPositions.map(p => {
+    if (typeof p === 'string') return Math.max(0, ALPHABET.indexOf(p.toUpperCase()[0]));
+    return Math.max(0, Math.min(25, parseInt(p) || 0));
+  });
+  rotorPositions = [...parsedPositions];
+  startPositions = [...parsedPositions];
+
+  ringSettings = s.ringSettings.map(r => Math.max(0, Math.min(25, parseInt(r) - 1)));
+
+  // Accept both "B" and "UKW-B" formats
+  selectedReflector = s.reflector.replace('UKW-', '');
+
+  // Expand plugboard pairs (stored as {A:'Z'} — expand to both directions)
+  const rawPairs = s.plugboardPairs || {};
+  plugboardPairs = {};
+  Object.entries(rawPairs).forEach(([a, b]) => {
+    plugboardPairs[a] = b;
+    plugboardPairs[b] = a;
+  });
+
+  // Update all UI elements
+  [0,1,2].forEach(i => {
+    document.getElementById(`rotor-select-${i}`).value = rotorTypes[i];
+    document.getElementById(`ring-${i}`).value = ringSettings[i] + 1;
+  });
+  document.getElementById('reflector-select').value = selectedReflector;
+  document.getElementById('reflector-drum').textContent = selectedReflector;
+  updateAllRotorDisplays();
+
+  document.querySelectorAll('.socket').forEach(s => s.classList.remove('plugged','selected'));
+  Object.keys(plugboardPairs).forEach(a => {
+    const sock = document.getElementById(`socket-${a}`);
+    if (sock) sock.classList.add('plugged');
+  });
+  updatePlugDisplay();
+
+  setImportStatus(`✔ Settings applied — Rotors: ${rotorTypes.join('-')} · Position: ${parsedPositions.map(p=>ALPHABET[p]).join('')} · Reflector: UKW-${selectedReflector}`, 'ok');
 }
 
 // ===== CODEBOOK (SCHLÜSSELHEFT) =====
