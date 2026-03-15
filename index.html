@@ -176,7 +176,9 @@
     gap: 12px;
     justify-content: center;
     margin-bottom: 20px;
+    margin-top: 14px;
     padding: 16px;
+    padding-top: 20px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
@@ -185,14 +187,18 @@
 
   .rotor-section-label {
     position: absolute;
-    top: -10px;
+    top: -11px;
     left: 16px;
     background: var(--bakelite);
-    padding: 0 8px;
+    padding: 2px 8px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
     font-family: 'Oswald', sans-serif;
+    border: 1px solid var(--brass-dark);
+    border-radius: 2px;
+    white-space: nowrap;
+    z-index: 1;
   }
 
   .rotor-assembly {
@@ -351,7 +357,9 @@
     align-items: center;
     gap: 6px;
     margin-bottom: 16px;
+    margin-top: 14px;
     padding: 16px;
+    padding-top: 20px;
     background: rgba(0,0,0,0.4);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
@@ -360,14 +368,18 @@
 
   .lampboard-label {
     position: absolute;
-    top: -10px;
+    top: -11px;
     left: 16px;
     background: var(--bakelite);
-    padding: 0 8px;
+    padding: 2px 8px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
     font-family: 'Oswald', sans-serif;
+    border: 1px solid var(--brass-dark);
+    border-radius: 2px;
+    white-space: nowrap;
+    z-index: 1;
   }
 
   .lamp-row {
@@ -413,7 +425,9 @@
     align-items: center;
     gap: 6px;
     margin-bottom: 16px;
+    margin-top: 14px;
     padding: 16px;
+    padding-top: 20px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
@@ -422,14 +436,18 @@
 
   .keyboard-label {
     position: absolute;
-    top: -10px;
+    top: -11px;
     left: 16px;
     background: var(--bakelite);
-    padding: 0 8px;
+    padding: 2px 8px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
     font-family: 'Oswald', sans-serif;
+    border: 1px solid var(--brass-dark);
+    border-radius: 2px;
+    white-space: nowrap;
+    z-index: 1;
   }
 
   .key-row {
@@ -472,6 +490,8 @@
   /* PLUGBOARD */
   .plugboard {
     padding: 16px;
+    padding-top: 22px;
+    margin-top: 14px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
@@ -481,14 +501,18 @@
 
   .plugboard-label {
     position: absolute;
-    top: -10px;
+    top: -11px;
     left: 16px;
     background: var(--bakelite);
-    padding: 0 8px;
+    padding: 2px 8px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
     font-family: 'Oswald', sans-serif;
+    border: 1px solid var(--brass-dark);
+    border-radius: 2px;
+    white-space: nowrap;
+    z-index: 1;
   }
 
   .plugboard-inner {
@@ -617,21 +641,26 @@
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
     padding: 14px;
+    padding-top: 20px;
+    margin-top: 14px;
     position: relative;
-    min-width: 0; /* prevent grid blowout */
+    min-width: 0;
   }
 
   .tape-box-label {
     position: absolute;
-    top: -10px;
+    top: -11px;
     left: 12px;
     background: var(--bakelite);
-    padding: 0 8px;
+    padding: 2px 8px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
     font-family: 'Oswald', sans-serif;
+    border: 1px solid var(--brass-dark);
+    border-radius: 2px;
     white-space: nowrap;
+    z-index: 1;
   }
 
   .tape-output {
@@ -757,8 +786,8 @@
     .help-header { flex-wrap: wrap; gap: 8px; }
     .help-title { font-size: 0.85rem; }
     .cb-body { flex-direction: column; }
-    .cb-list-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--brass-dark); max-height: 200px; }
-    .cb-entry-list { max-height: 120px; }
+    .cb-list-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--brass-dark); max-height: 340px; }
+    .cb-entry-list { max-height: 220px; }
 
     /* Rotor label font */
     .rotor-label { font-size: 0.55rem; }
@@ -1042,8 +1071,8 @@
     background: rgba(184,134,11,0.06);
     border: 1px solid rgba(184,134,11,0.15);
     border-radius: 3px;
-    padding: 8px 10px;
-    margin-bottom: 5px;
+    padding: 10px 10px;
+    margin-bottom: 6px;
     cursor: pointer;
     transition: all 0.12s;
     position: relative;
