@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#1a1208">
 <title>ENIGMA — Wehrmacht Cipher Machine</title>
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Share+Tech+Mono&family=Oswald:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -157,7 +158,7 @@
       inset 0 1px 0 rgba(255,255,255,0.05),
       inset 0 0 60px rgba(0,0,0,0.4);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .machine-body::before {
@@ -617,6 +618,7 @@
     border-radius: 6px;
     padding: 14px;
     position: relative;
+    min-width: 0; /* prevent grid blowout */
   }
 
   .tape-box-label {
@@ -629,6 +631,7 @@
     color: var(--brass);
     letter-spacing: 0.2em;
     font-family: 'Oswald', sans-serif;
+    white-space: nowrap;
   }
 
   .tape-output {
@@ -638,11 +641,14 @@
     letter-spacing: 0.15em;
     min-height: 60px;
     word-break: break-all;
+    overflow-wrap: break-word;
     line-height: 1.9;
     background: rgba(0,0,0,0.2);
     padding: 8px;
     border-radius: 3px;
     border: 1px solid rgba(255,255,255,0.05);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .tape-output .group {
@@ -663,6 +669,7 @@
     resize: none;
     outline: none;
     min-height: 60px;
+    box-sizing: border-box;
   }
 
   .input-area:focus { border-color: var(--brass); }
@@ -694,7 +701,81 @@
     margin-top: 8px;
   }
 
-  /* Print Styles */
+  /* ===== MOBILE RESPONSIVE ===== */
+  @media (max-width: 700px) {
+    body { padding: 10px; }
+
+    .machine-header h1 { font-size: 1.8rem; letter-spacing: 0.25em; }
+    .machine-header .subtitle { font-size: 0.65rem; }
+    .machine-body { padding: 12px; }
+
+    /* Rotors: horizontal scroll on small screens */
+    .rotor-section {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 10px;
+      justify-content: flex-start;
+    }
+    .rotor-assembly { min-width: 80px; }
+    .rotor-drum { width: 70px; }
+    .rotor-select { width: 70px; }
+
+    /* Lampboard & keyboard: scroll if needed */
+    .lampboard, .keyboard { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .lamp-row, .key-row { flex-wrap: nowrap; }
+    .lamp { width: 30px; height: 30px; font-size: 0.65rem; }
+    .key  { width: 32px; height: 32px; font-size: 0.75rem; }
+
+    /* Plugboard */
+    .plugboard-inner { flex-direction: column; }
+    .plugboard-sockets { min-width: unset; }
+    .plug-controls { width: 100%; }
+
+    /* Tape: stack vertically on mobile */
+    .tape-section { grid-template-columns: 1fr; }
+    .tape-output { font-size: 1rem; letter-spacing: 0.1em; }
+
+    /* Controls bar: wrap tightly */
+    .controls-bar { gap: 6px; padding: 8px; }
+    .action-btn { font-size: 0.62rem; padding: 5px 8px; }
+
+    /* Encoding mode group: wrap */
+    .enc-mode-group { flex-wrap: wrap; gap: 4px; }
+
+    /* Tape controls: wrap */
+    .tape-controls { flex-wrap: wrap; gap: 6px; }
+
+    /* Lang selector */
+    .lang-selector { flex-wrap: wrap; gap: 4px; }
+
+    /* Help/codebook modals full screen */
+    .help-modal, .codebook-modal, .export-modal {
+      max-width: 100% !important;
+      max-height: 95vh;
+      border-radius: 4px;
+    }
+    .help-header { flex-wrap: wrap; gap: 8px; }
+    .help-title { font-size: 0.85rem; }
+    .cb-body { flex-direction: column; }
+    .cb-list-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--brass-dark); max-height: 200px; }
+    .cb-entry-list { max-height: 120px; }
+
+    /* Rotor label font */
+    .rotor-label { font-size: 0.55rem; }
+    .notch-dot, .notch-dot.inactive { width: 5px; height: 5px; }
+  }
+
+  @media (max-width: 420px) {
+    .machine-header h1 { font-size: 1.4rem; letter-spacing: 0.15em; }
+    .lamp  { width: 26px; height: 26px; font-size: 0.58rem; }
+    .key   { width: 28px; height: 28px; font-size: 0.68rem; }
+    .lamp-row, .key-row { gap: 4px; }
+    .rotor-drum { width: 60px; height: 100px; }
+    .enc-hint-grid { gap: 3px 6px; }
+    .enc-pair { font-size: 0.58rem; }
+  }
+
+  /* ===== PRINT STYLES ===== */
   @media print {
     body {
       background: white !important;
@@ -1727,8 +1808,8 @@
       <div class="help-title-block">
         <div class="help-eagle">⇅</div>
         <div>
-          <h2 class="help-title">IMPORT / EXPORT SETTINGS</h2>
-          <div class="help-subtitle">Maschinenschlüssel · Machine Configuration Transfer</div>
+          <h2 class="help-title" data-i18n="expTitle">IMPORT / EXPORT SETTINGS</h2>
+          <div class="help-subtitle" data-i18n="expSubtitle">Maschinenschlüssel · Machine Configuration Transfer</div>
         </div>
       </div>
       <button class="help-close" onclick="closeExportSettings()">✕ CLOSE</button>
@@ -1737,23 +1818,23 @@
     <div class="export-body">
 
       <div class="export-tabs">
-        <button class="export-tab active" onclick="switchExportTab('json', this)">EXPORT — JSON</button>
-        <button class="export-tab" onclick="switchExportTab('plaintext', this)">EXPORT — PLAINTEXT</button>
-        <button class="export-tab" onclick="switchExportTab('both', this)">EXPORT — BOTH</button>
-        <button class="export-tab import-tab" onclick="switchExportTab('import', this)">⬆ IMPORT JSON</button>
+        <button class="export-tab active" onclick="switchExportTab('json', this)" data-i18n="expTabJson">EXPORT — JSON</button>
+        <button class="export-tab" onclick="switchExportTab('plaintext', this)" data-i18n="expTabPlain">EXPORT — PLAINTEXT</button>
+        <button class="export-tab" onclick="switchExportTab('both', this)" data-i18n="expTabBoth">EXPORT — BOTH</button>
+        <button class="export-tab import-tab" onclick="switchExportTab('import', this)" data-i18n="expTabImport">⬆ IMPORT JSON</button>
       </div>
 
       <div class="export-content" id="export-tab-json">
-        <div class="export-label">Machine settings as JSON — copy and paste into the Import tab on another machine</div>
+        <div class="export-label"><span data-i18n="expDescJson">Machine settings as JSON — copy and paste into the Import tab on another machine</span></div>
         <textarea class="export-textarea" id="export-json-text" readonly onclick="this.select()"></textarea>
         <div class="export-actions">
-          <button class="action-btn" onclick="copyExport('export-json-text')">⧉ COPY</button>
-          <button class="action-btn" onclick="downloadExport('json')">⬇ DOWNLOAD .json</button>
+          <button class="action-btn" onclick="copyExport('export-json-text')" data-i18n="expCopy">⧉ COPY</button>
+          <button class="action-btn" onclick="downloadExport('json')" data-i18n="expDlJson">⬇ DOWNLOAD .json</button>
         </div>
       </div>
 
       <div class="export-content hidden" id="export-tab-plaintext">
-        <div class="export-label">Human-readable plaintext — share with another operator to configure their machine manually</div>
+        <div class="export-label"><span data-i18n="expDescPlain">Human-readable plaintext — share with another operator to configure their machine manually</span></div>
         <textarea class="export-textarea export-textarea-plain" id="export-plain-text" readonly onclick="this.select()"></textarea>
         <div class="export-actions">
           <button class="action-btn" onclick="copyExport('export-plain-text')">⧉ COPY</button>
@@ -1762,7 +1843,7 @@
       </div>
 
       <div class="export-content hidden" id="export-tab-both">
-        <div class="export-label">Both formats combined — full record</div>
+        <div class="export-label"><span data-i18n="expDescBoth">Both formats combined — full record</span></div>
         <textarea class="export-textarea export-textarea-tall" id="export-both-text" readonly onclick="this.select()"></textarea>
         <div class="export-actions">
           <button class="action-btn" onclick="copyExport('export-both-text')">⧉ COPY</button>
@@ -1771,20 +1852,20 @@
       </div>
 
       <div class="export-content hidden" id="export-tab-import">
-        <div class="export-label">Paste exported JSON below, or load a .json file — this will apply the settings directly to the machine</div>
+        <div class="export-label"><span data-i18n="expDescImport">Paste exported JSON below, or load a .json file — this will apply the settings directly to the machine</span></div>
         <textarea class="export-textarea export-textarea-plain" id="import-json-text" placeholder='Paste JSON here, e.g. {"rotorTypes":["III","II","I"],...}'></textarea>
         <div id="import-status" class="import-status"></div>
         <div class="export-actions">
-          <label class="action-btn" style="cursor:pointer;">📂 LOAD .json FILE<input type="file" accept=".json" style="display:none" onchange="loadImportFile(event)"></label>
-          <button class="action-btn import-apply-btn" onclick="applyImportedSettings()">✔ APPLY TO MACHINE</button>
+          <label class="action-btn" style="cursor:pointer;" data-i18n="expLoadFile">📂 LOAD .json FILE<input type="file" accept=".json" style="display:none" onchange="loadImportFile(event)"></label>
+          <button class="action-btn import-apply-btn" onclick="applyImportedSettings()" data-i18n="expApply">✔ APPLY TO MACHINE</button>
         </div>
       </div>
 
     </div>
 
     <div class="help-footer">
-      <span>Export reflects the machine's current state · Import overwrites all current settings</span>
-      <button class="action-btn" onclick="closeExportSettings()">CLOSE</button>
+      <span><span data-i18n="expFooter">Export reflects the machine's current state · Import overwrites all current settings</span></span>
+      <button class="action-btn" onclick="closeExportSettings()" data-i18n="expClose">CLOSE</button>
     </div>
   </div>
 </div>
@@ -1797,8 +1878,8 @@
       <div class="help-title-block">
         <div class="help-eagle">⊞</div>
         <div>
-          <h2 class="help-title">SCHLÜSSELHEFT — CODEBOOK</h2>
-          <div class="help-subtitle">Geheime Tagesschlüssel · Daily Key Settings Registry</div>
+          <h2 class="help-title" data-i18n="cbTitle">SCHLÜSSELHEFT — CODEBOOK</h2>
+          <div class="help-subtitle" data-i18n="cbSubtitle">Geheime Tagesschlüssel · Daily Key Settings Registry</div>
         </div>
       </div>
       <button class="help-close" onclick="closeCodebook()">✕ CLOSE</button>
@@ -1809,15 +1890,15 @@
       <!-- LEFT: Entry list -->
       <div class="cb-list-panel">
         <div class="cb-panel-header">
-          <span>SAVED KEYS</span>
+          <span data-i18n="cbSavedKeys">SAVED KEYS</span>
           <span id="cb-count" class="cb-count">0 entries</span>
         </div>
         <div class="cb-entry-list" id="cb-entry-list">
-          <div class="cb-empty" id="cb-empty">No keys saved yet.<br>Create your first entry →</div>
+          <div class="cb-empty" id="cb-empty" data-i18n="cbEmpty">No keys saved yet. Create your first entry →</div>
         </div>
         <div class="cb-list-actions">
-          <button class="action-btn" onclick="exportCodebook()">⬇ EXPORT JSON</button>
-          <label class="action-btn" style="cursor:pointer;">⬆ IMPORT JSON<input type="file" accept=".json" style="display:none" onchange="importCodebook(event)"></label>
+          <button class="action-btn" onclick="exportCodebook()" data-i18n="cbExportJson">⬇ EXPORT JSON</button>
+          <label class="action-btn" style="cursor:pointer;" data-i18n="cbImportJson" data-i18n="expTabImport">⬆ IMPORT JSON<input type="file" accept=".json" style="display:none" onchange="importCodebook(event)"></label>
           <button class="action-btn danger" onclick="clearAllKeys()">✕ CLEAR ALL</button>
         </div>
       </div>
@@ -1825,8 +1906,8 @@
       <!-- RIGHT: Editor -->
       <div class="cb-editor-panel">
         <div class="cb-panel-header">
-          <span id="cb-editor-title">NEW KEY ENTRY</span>
-          <button class="cb-new-btn" onclick="newKeyEntry()">+ NEW</button>
+          <span id="cb-editor-title" data-i18n="cbNewEntry">NEW KEY ENTRY</span>
+          <button class="cb-new-btn" onclick="newKeyEntry()" data-i18n="cbNew">+ NEW</button>
         </div>
 
         <div class="cb-form">
@@ -1834,19 +1915,19 @@
 
           <div class="cb-field-row">
             <div class="cb-field">
-              <label class="cb-label">DESIGNATION / NAME</label>
+              <label class="cb-label" data-i18n="cbDesignation">DESIGNATION / NAME</label>
               <input type="text" class="cb-input" id="cb-name" placeholder="e.g. Day 14 — Gruppe Nord" maxlength="60">
             </div>
             <div class="cb-field cb-field-sm">
-              <label class="cb-label">DATE / CODE</label>
+              <label class="cb-label" data-i18n="cbDate">DATE / CODE</label>
               <input type="text" class="cb-input" id="cb-date" placeholder="e.g. 1944-06-06" maxlength="20">
             </div>
           </div>
 
-          <div class="cb-group-label">ROTORS (WALZEN)</div>
+          <div class="cb-group-label" data-i18n="cbRotorGroup">ROTORS (WALZEN)</div>
           <div class="cb-field-row">
             <div class="cb-field">
-              <label class="cb-label">ORDER (L → R)</label>
+              <label class="cb-label" data-i18n="cbRotorOrder">ORDER (L → R)</label>
               <div class="cb-rotor-row">
                 <select class="cb-select" id="cb-rotor-0">
                   <option value="I">I</option><option value="II">II</option><option value="III" selected>III</option><option value="IV">IV</option><option value="V">V</option>
@@ -1860,7 +1941,7 @@
               </div>
             </div>
             <div class="cb-field">
-              <label class="cb-label">START POSITIONS</label>
+              <label class="cb-label" data-i18n="cbStartPos">START POSITIONS</label>
               <div class="cb-rotor-row">
                 <input type="text" class="cb-input cb-pos" id="cb-pos-0" maxlength="1" placeholder="A" onfocus="this.select()" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'')">
                 <input type="text" class="cb-input cb-pos" id="cb-pos-1" maxlength="1" placeholder="A" onfocus="this.select()" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'')">
@@ -1868,7 +1949,7 @@
               </div>
             </div>
             <div class="cb-field">
-              <label class="cb-label">RING SETTINGS</label>
+              <label class="cb-label" data-i18n="cbRingSettings">RING SETTINGS</label>
               <div class="cb-rotor-row">
                 <input type="number" class="cb-input cb-pos" id="cb-ring-0" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
                 <input type="number" class="cb-input cb-pos" id="cb-ring-1" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
@@ -1879,7 +1960,7 @@
 
           <div class="cb-field-row">
             <div class="cb-field cb-field-sm">
-              <label class="cb-label">REFLECTOR (UKW)</label>
+              <label class="cb-label" data-i18n="cbReflector">REFLECTOR (UKW)</label>
               <select class="cb-select cb-select-full" id="cb-reflector">
                 <option value="B">UKW-B</option>
                 <option value="C">UKW-C</option>
@@ -1887,24 +1968,24 @@
             </div>
           </div>
 
-          <div class="cb-group-label">STECKERBRETT (PLUGBOARD PAIRS)</div>
+          <div class="cb-group-label" data-i18n="cbPlugGroup">STECKERBRETT (PLUGBOARD PAIRS)</div>
           <div class="cb-plugboard-editor">
             <div class="cb-plug-sockets" id="cb-plug-sockets"></div>
             <div class="cb-plug-info">
-              <div class="cb-plug-pairs-label">ACTIVE PAIRS:</div>
+              <div class="cb-plug-pairs-label" data-i18n="cbActivePairs">ACTIVE PAIRS:</div>
               <div id="cb-plug-pairs-display" class="cb-plug-pairs-display">None</div>
               <button class="action-btn danger" onclick="clearCbPlugboard()" style="margin-top:6px;font-size:0.6rem;padding:4px 8px;">CLEAR</button>
             </div>
           </div>
 
           <div class="cb-field">
-            <label class="cb-label">OPERATOR NOTES</label>
+            <label class="cb-label" data-i18n="cbNotes">OPERATOR NOTES</label>
             <textarea class="cb-input cb-textarea" id="cb-notes" placeholder="Operational notes, network designation, frequency, etc." rows="2"></textarea>
           </div>
 
           <div class="cb-form-actions">
-            <button class="action-btn" onclick="captureCurrentSettings()">↓ CAPTURE CURRENT MACHINE</button>
-            <button class="action-btn" id="cb-save-btn" onclick="saveKeyEntry()">SAVE ENTRY</button>
+            <button class="action-btn" onclick="captureCurrentSettings()" data-i18n="cbCapture">↓ CAPTURE CURRENT MACHINE</button>
+            <button class="action-btn" id="cb-save-btn" onclick="saveKeyEntry()" data-i18n="cbSaveEntry">SAVE ENTRY</button>
           </div>
         </div>
       </div>
@@ -1913,10 +1994,10 @@
 
     <!-- PRINT CODEBOOK area -->
     <div class="help-footer">
-      <span>Entries stored in browser localStorage · Export JSON to share between machines</span>
+      <span data-i18n="cbFooterNote">Entries stored in browser localStorage · Export JSON to share between machines</span>
       <div style="display:flex;gap:8px;">
-        <button class="action-btn" onclick="printCodebook()">🖨 PRINT CODEBOOK</button>
-        <button class="action-btn" onclick="closeCodebook()">CLOSE</button>
+        <button class="action-btn" onclick="printCodebook()" data-i18n="cbPrint">🖨 PRINT CODEBOOK</button>
+        <button class="action-btn" onclick="closeCodebook()" data-i18n="cbClose">CLOSE</button>
       </div>
     </div>
 
@@ -3143,8 +3224,9 @@ function setCbPlugboard(pairs) {
 // New blank entry form
 function newKeyEntry() {
   cbEditingId = null;
-  document.getElementById('cb-editor-title').textContent = 'NEW KEY ENTRY';
-  document.getElementById('cb-save-btn').textContent = 'SAVE ENTRY';
+  const t = TRANSLATIONS[currentUILang];
+  document.getElementById('cb-editor-title').textContent = t.cbNewEntry || 'NEW KEY ENTRY';
+  document.getElementById('cb-save-btn').textContent = t.cbSaveEntry || 'SAVE ENTRY';
   document.getElementById('cb-editing-id').value = '';
   document.getElementById('cb-name').value = '';
   document.getElementById('cb-date').value = new Date().toISOString().slice(0,10);
@@ -3263,8 +3345,9 @@ function editKeyEntry(id) {
   const entry = codebook.find(e => e.id === id);
   if (!entry) return;
   cbEditingId = id;
-  document.getElementById('cb-editor-title').textContent = 'EDITING: ' + entry.name.toUpperCase().slice(0,30);
-  document.getElementById('cb-save-btn').textContent = 'UPDATE ENTRY';
+  const t = TRANSLATIONS[currentUILang];
+  document.getElementById('cb-editor-title').textContent = (t.cbEditing || 'EDITING:') + ' ' + entry.name.toUpperCase().slice(0,30);
+  document.getElementById('cb-save-btn').textContent = t.cbUpdateEntry || 'UPDATE ENTRY';
   document.getElementById('cb-name').value = entry.name;
   document.getElementById('cb-date').value = entry.date || '';
   document.getElementById('cb-rotor-0').value = entry.rotorTypes[0];
@@ -3519,6 +3602,50 @@ const TRANSLATIONS = {
     btnCodebook:      '📋 SCHLÜSSELHEFT',
     btnHelp:          '? HILFE / GESCHICHTE',
     decodeHint:       'Zum Entschlüsseln: Walzen auf gleiche Startposition wie beim Verschlüsseln setzen, dann Chiffretext eingeben.',
+    // Codebook modal
+    cbTitle:          'SCHLÜSSELHEFT — SCHLÜSSELBUCH',
+    cbSubtitle:       'Geheime Tagesschlüssel · Tägliche Schlüsseleinstellungen',
+    cbSavedKeys:      'GESPEICHERTE SCHLÜSSEL',
+    cbEmpty:          'Noch keine Schlüssel gespeichert. Ersten Eintrag erstellen →',
+    cbExportJson:     '⬇ JSON EXPORTIEREN',
+    cbImportJson:     '⬆ JSON IMPORTIEREN',
+    cbNewEntry:       'NEUER EINTRAG',
+    cbNew:            '+ NEU',
+    cbDesignation:    'BEZEICHNUNG / NAME',
+    cbDate:           'DATUM / CODE',
+    cbRotorGroup:     'WALZEN (ROTOREN)',
+    cbRotorOrder:     'REIHENFOLGE (L → R)',
+    cbStartPos:       'STARTPOSITIONEN',
+    cbRingSettings:   'RINGSTELLUNGEN',
+    cbReflector:      'REFLEKTOR (UKW)',
+    cbPlugGroup:      'STECKERBRETT (VERBINDUNGSPAARE)',
+    cbActivePairs:    'AKTIVE PAARE:',
+    cbNotes:          'OPERATIONSNOTIZEN',
+    cbCapture:        '↓ AKTUELLE MASCHINE ÜBERNEHMEN',
+    cbSaveEntry:      'EINTRAG SPEICHERN',
+    cbFooterNote:     'Einträge im Browser-Speicher · JSON exportieren zum Teilen',
+    cbPrint:          '🖨 SCHLÜSSELHEFT DRUCKEN',
+    cbClose:          'SCHLIESSEN',
+    cbEditing:        'BEARBEITUNG:',
+    cbUpdateEntry:    'EINTRAG AKTUALISIEREN',
+    // Export modal
+    expTitle:         'IMPORT / EXPORT EINSTELLUNGEN',
+    expSubtitle:      'Maschinenschlüssel · Konfigurationsübertragung',
+    expTabJson:       'EXPORT — JSON',
+    expTabPlain:      'EXPORT — KLARTEXT',
+    expTabBoth:       'EXPORT — BEIDES',
+    expTabImport:     '⬆ JSON IMPORTIEREN',
+    expDescJson:      'Einstellungen als JSON — in den Import-Tab einer anderen Maschine einfügen',
+    expDescPlain:     'Lesbarer Klartext — zum manuellen Konfigurieren einer anderen Maschine',
+    expDescBoth:      'Beide Formate kombiniert — vollständige Aufzeichnung',
+    expDescImport:    'JSON unten einfügen oder .json-Datei laden — wird direkt auf die Maschine angewendet',
+    expCopy:          '⧉ KOPIEREN',
+    expDlJson:        '⬇ HERUNTERLADEN .json',
+    expFooter:        'Export zeigt aktuellen Zustand · Import überschreibt alle Einstellungen',
+    expClose:         'SCHLIESSEN',
+    expApply:         '✔ AUF MASCHINE ANWENDEN',
+    expLoadFile:      '📂 .json DATEI LADEN',
+    // Print
     printTitle:       'ENIGMA — CHIFFRIER-PROTOKOLL',
     printTitleCipher: 'ENIGMA — CHIFFRETEXT-ÜBERMITTLUNG',
     printClassification: 'GEHEIME KOMMANDOSACHE',
@@ -3562,6 +3689,50 @@ const TRANSLATIONS = {
     btnCodebook:      '📋 CODEBOOK',
     btnHelp:          '? HELP / HISTORY',
     decodeHint:       'To decode: set rotors to same start position as encoding, then type or paste cipher text. The Enigma is self-reciprocal.',
+    // Codebook modal
+    cbTitle:          'CODEBOOK — KEY REGISTRY',
+    cbSubtitle:       'Daily Key Settings · Configuration Registry',
+    cbSavedKeys:      'SAVED KEYS',
+    cbEmpty:          'No keys saved yet. Create your first entry →',
+    cbExportJson:     '⬇ EXPORT JSON',
+    cbImportJson:     '⬆ IMPORT JSON',
+    cbNewEntry:       'NEW KEY ENTRY',
+    cbNew:            '+ NEW',
+    cbDesignation:    'DESIGNATION / NAME',
+    cbDate:           'DATE / CODE',
+    cbRotorGroup:     'ROTORS',
+    cbRotorOrder:     'ORDER (L → R)',
+    cbStartPos:       'START POSITIONS',
+    cbRingSettings:   'RING SETTINGS',
+    cbReflector:      'REFLECTOR',
+    cbPlugGroup:      'PLUGBOARD PAIRS',
+    cbActivePairs:    'ACTIVE PAIRS:',
+    cbNotes:          'OPERATOR NOTES',
+    cbCapture:        '↓ CAPTURE CURRENT MACHINE',
+    cbSaveEntry:      'SAVE ENTRY',
+    cbFooterNote:     'Entries stored in browser storage · Export JSON to share between machines',
+    cbPrint:          '🖨 PRINT CODEBOOK',
+    cbClose:          'CLOSE',
+    cbEditing:        'EDITING:',
+    cbUpdateEntry:    'UPDATE ENTRY',
+    // Export modal
+    expTitle:         'IMPORT / EXPORT SETTINGS',
+    expSubtitle:      'Machine Key · Configuration Transfer',
+    expTabJson:       'EXPORT — JSON',
+    expTabPlain:      'EXPORT — PLAINTEXT',
+    expTabBoth:       'EXPORT — BOTH',
+    expTabImport:     '⬆ IMPORT JSON',
+    expDescJson:      'Machine settings as JSON — copy and paste into the Import tab on another machine',
+    expDescPlain:     'Human-readable plaintext — share with another operator to configure their machine manually',
+    expDescBoth:      'Both formats combined — full record',
+    expDescImport:    'Paste exported JSON below, or load a .json file — this will apply the settings directly to the machine',
+    expCopy:          '⧉ COPY',
+    expDlJson:        '⬇ DOWNLOAD .json',
+    expFooter:        'Export reflects the machine\'s current state · Import overwrites all current settings',
+    expClose:         'CLOSE',
+    expApply:         '✔ APPLY TO MACHINE',
+    expLoadFile:      '📂 LOAD .json FILE',
+    // Print
     printTitle:       'ENIGMA — CIPHER TRANSCRIPT',
     printTitleCipher: 'ENIGMA — CIPHERTEXT TRANSMISSION',
     printClassification: 'TOP SECRET',
@@ -3605,6 +3776,50 @@ const TRANSLATIONS = {
     btnCodebook:      '📋 SCHLÜSSELHEFT',
     btnHelp:          '? HELP / HISTORY',
     decodeHint:       'To decode: set rotors to same start position as encoding, then type (or paste) cipher text. The Enigma is self-reciprocal.',
+    // Codebook modal
+    cbTitle:          'SCHLÜSSELHEFT — CODEBOOK',
+    cbSubtitle:       'Geheime Tagesschlüssel · Daily Key Settings Registry',
+    cbSavedKeys:      'SAVED KEYS',
+    cbEmpty:          'No keys saved yet. Create your first entry →',
+    cbExportJson:     '⬇ EXPORT JSON',
+    cbImportJson:     '⬆ IMPORT JSON',
+    cbNewEntry:       'NEW KEY ENTRY',
+    cbNew:            '+ NEW',
+    cbDesignation:    'DESIGNATION / NAME',
+    cbDate:           'DATE / CODE',
+    cbRotorGroup:     'ROTORS (WALZEN)',
+    cbRotorOrder:     'ORDER (L → R)',
+    cbStartPos:       'START POSITIONS',
+    cbRingSettings:   'RING SETTINGS',
+    cbReflector:      'REFLECTOR (UKW)',
+    cbPlugGroup:      'STECKERBRETT (PLUGBOARD PAIRS)',
+    cbActivePairs:    'ACTIVE PAIRS:',
+    cbNotes:          'OPERATOR NOTES',
+    cbCapture:        '↓ CAPTURE CURRENT MACHINE',
+    cbSaveEntry:      'SAVE ENTRY',
+    cbFooterNote:     'Entries stored in browser localStorage · Export JSON to share between machines',
+    cbPrint:          '🖨 PRINT CODEBOOK',
+    cbClose:          'CLOSE',
+    cbEditing:        'EDITING:',
+    cbUpdateEntry:    'UPDATE ENTRY',
+    // Export modal
+    expTitle:         'IMPORT / EXPORT SETTINGS',
+    expSubtitle:      'Maschinenschlüssel · Machine Configuration Transfer',
+    expTabJson:       'EXPORT — JSON',
+    expTabPlain:      'EXPORT — PLAINTEXT',
+    expTabBoth:       'EXPORT — BOTH',
+    expTabImport:     '⬆ IMPORT JSON',
+    expDescJson:      'Machine settings as JSON — copy and paste into the Import tab on another machine',
+    expDescPlain:     'Human-readable plaintext — share with another operator to configure their machine manually',
+    expDescBoth:      'Both formats combined — full record',
+    expDescImport:    'Paste exported JSON below, or load a .json file — this will apply the settings directly to the machine',
+    expCopy:          '⧉ COPY',
+    expDlJson:        '⬇ DOWNLOAD .json',
+    expFooter:        'Export reflects the machine\'s current state · Import overwrites all current settings',
+    expClose:         'CLOSE',
+    expApply:         '✔ APPLY TO MACHINE',
+    expLoadFile:      '📂 LOAD .json FILE',
+    // Print
     printTitle:       'ENIGMA — CIPHER TRANSCRIPT / CHIFFRIER-PROTOKOLL',
     printTitleCipher: 'ENIGMA — CIPHERTEXT TRANSMISSION / CHIFFRETEXT-ÜBERMITTLUNG',
     printClassification: 'GEHEIME KOMMANDOSACHE — TOP SECRET',
