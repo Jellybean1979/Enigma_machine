@@ -83,6 +83,67 @@
     font-size: 0.7rem !important;
   }
 
+  .lang-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 8px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--brass-dark);
+    border-radius: 3px;
+    padding: 4px 10px;
+    display: inline-flex;
+  }
+
+  .lang-selector-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--brass-dark);
+    padding-right: 6px;
+    border-right: 1px solid var(--brass-dark);
+    margin-right: 4px;
+  }
+
+  .lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--steel-light);
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 2px;
+    transition: all 0.12s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .lang-btn:hover { color: var(--brass); }
+  .lang-btn:has(input:checked) { color: var(--amber); }
+
+  .lang-btn input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--brass-dark);
+    border-radius: 50%;
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.1s;
+  }
+
+  .lang-btn input[type="radio"]:checked {
+    background: var(--amber);
+    border-color: var(--brass);
+    box-shadow: 0 0 5px rgba(255,183,0,0.5);
+  }
+
   .machine-body {
     background: linear-gradient(160deg, var(--bakelite-light) 0%, var(--bakelite) 100%);
     border: 3px solid var(--brass-dark);
@@ -1429,8 +1490,14 @@
 
 <div class="machine-header">
   <h1>ENIGMA</h1>
-  <div class="subtitle">Geheimschreiber — Wehrmacht Cipher Machine — Modell I</div>
-  <div class="classification">GEHEIME KOMMANDOSACHE — TOP SECRET</div>
+  <div class="subtitle" data-i18n="subtitle">Geheimschreiber — Wehrmacht Cipher Machine — Modell I</div>
+  <div class="classification" data-i18n="classification">GEHEIME KOMMANDOSACHE — TOP SECRET</div>
+  <div class="lang-selector no-print">
+    <span class="lang-selector-label">UI LANGUAGE:</span>
+    <label class="lang-btn"><input type="radio" name="ui-lang" value="de" onchange="setUILang('de')"> DEUTSCH</label>
+    <label class="lang-btn"><input type="radio" name="ui-lang" value="en" onchange="setUILang('en')"> ENGLISH</label>
+    <label class="lang-btn"><input type="radio" name="ui-lang" value="both" checked onchange="setUILang('both')"> BOTH</label>
+  </div>
   <strong id="versionTag" style="font-size: 0.8em; display: block;">
     by Gary Langley — loading version…
   </strong>
@@ -1440,7 +1507,7 @@
 
   <!-- ROTOR SECTION -->
   <div class="rotor-section">
-    <div class="rotor-section-label">ROTOREN / WALZEN</div>
+    <div class="rotor-section-label" data-i18n="rotorSectionLabel">ROTOREN / WALZEN</div>
 
     <!-- Reflector -->
     <div class="reflector-assembly">
@@ -1528,7 +1595,7 @@
 
   <!-- LAMPBOARD -->
   <div class="lampboard" id="lampboard">
-    <div class="lampboard-label">LAMPENFELD / LAMPBOARD</div>
+    <div class="lampboard-label" data-i18n="lampboardLabel">LAMPENFELD / LAMPBOARD</div>
     <div class="lamp-row" id="lamp-row-1"></div>
     <div class="lamp-row" id="lamp-row-2"></div>
     <div class="lamp-row" id="lamp-row-3"></div>
@@ -1536,7 +1603,7 @@
 
   <!-- KEYBOARD -->
   <div class="keyboard" id="keyboard-section">
-    <div class="keyboard-label">TASTATUR / KEYBOARD</div>
+    <div class="keyboard-label" data-i18n="keyboardLabel">TASTATUR / KEYBOARD</div>
     <div class="key-row" id="key-row-1"></div>
     <div class="key-row" id="key-row-2"></div>
     <div class="key-row" id="key-row-3"></div>
@@ -1546,14 +1613,14 @@
 
   <!-- PLUGBOARD -->
   <div class="plugboard">
-    <div class="plugboard-label">STECKERBRETT / PLUGBOARD</div>
+    <div class="plugboard-label" data-i18n="plugboardLabel">STECKERBRETT / PLUGBOARD</div>
     <div class="plugboard-inner">
       <div class="plugboard-sockets" id="plugboard-sockets"></div>
       <div class="plug-controls">
-        <div style="font-family:'Oswald',sans-serif;font-size:0.7rem;color:var(--brass);letter-spacing:0.1em;margin-bottom:4px;">ACTIVE STECKER PAIRS</div>
+        <div style="font-family:'Oswald',sans-serif;font-size:0.7rem;color:var(--brass);letter-spacing:0.1em;margin-bottom:4px;" data-i18n="activePairs">AKTIVE STECKER / ACTIVE PAIRS</div>
         <div class="plug-status" id="plug-status">No connections</div>
-        <button class="action-btn danger" onclick="clearPlugboard()" style="margin-top:6px;">CLEAR ALL</button>
-        <div style="font-size:0.6rem;color:var(--steel-light);margin-top:4px;">Click two sockets to connect. Click pair to remove.</div>
+        <button class="action-btn danger" onclick="clearPlugboard()" style="margin-top:6px;" data-i18n="clearAll">CLEAR ALL</button>
+        <div style="font-size:0.6rem;color:var(--steel-light);margin-top:4px;" data-i18n="plugHint">Click two sockets to connect. Click pair to remove.</div>
       </div>
     </div>
   </div>
@@ -1563,11 +1630,11 @@
   <!-- MESSAGE TAPE -->
   <div class="tape-section">
     <div class="tape-box">
-      <div class="tape-box-label">PLAINTEXT EINGABE / INPUT</div>
+      <div class="tape-box-label" data-i18n="plaintextLabel">KLARTEXT / PLAINTEXT INPUT</div>
       <textarea class="input-area" id="plain-input" placeholder="Type or paste message here. Select an encoding mode below to auto-convert spaces, punctuation, and numbers." oninput="encryptTextarea()"></textarea>
       <div class="tape-controls no-print">
-        <button class="action-btn" onclick="encryptTextarea()">ENCRYPT/DECRYPT</button>
-        <button class="action-btn danger" onclick="clearAll()">CLEAR</button>
+        <button class="action-btn" onclick="encryptTextarea()" data-i18n="encDecBtn">ENCRYPT/DECRYPT</button>
+        <button class="action-btn danger" onclick="clearAll()" data-i18n="clearBtn">CLEAR</button>
         <div class="enc-mode-group">
           <span class="enc-mode-label">ENCODING:</span>
           <label class="enc-mode-btn">
@@ -1630,7 +1697,7 @@
       </div>
     </div>
     <div class="tape-box">
-      <div class="tape-box-label">CHIFFRE AUSGABE / OUTPUT</div>
+      <div class="tape-box-label" data-i18n="cipherLabel">CHIFFRE AUSGABE / OUTPUT</div>
       <div class="tape-output" id="cipher-output">—</div>
       <div class="step-counter" id="step-counter">Steps: 0</div>
     </div>
@@ -1638,13 +1705,13 @@
 
   <!-- CONTROLS -->
   <div class="controls-bar no-print">
-    <button class="action-btn" onclick="resetRotorPositions()">RESET POSITIONS</button>
-    <button class="action-btn" onclick="loadDemoMessage()">DEMO MESSAGE</button>
-    <button class="action-btn" onclick="printMessage('full')">🖨 PRINT</button>
-    <button class="action-btn print-cipher-btn" onclick="printMessage('cipher')">🖨 CIPHER ONLY</button>
-    <button class="action-btn export-btn" onclick="showExportSettings()">⇅ IMPORT / EXPORT</button>
-    <button class="action-btn codebook-btn" onclick="showCodebook()">📋 SCHLÜSSELHEFT</button>
-    <button class="action-btn help-btn" onclick="showHelp()">? HELP / HISTORY</button>
+    <button class="action-btn" onclick="resetRotorPositions()" data-i18n="btnReset">RESET POSITIONS</button>
+    <button class="action-btn" onclick="loadDemoMessage()" data-i18n="btnDemo">DEMO MESSAGE</button>
+    <button class="action-btn" onclick="printMessage('full')" data-i18n="btnPrint">🖨 PRINT</button>
+    <button class="action-btn print-cipher-btn" onclick="printMessage('cipher')" data-i18n="btnCipherOnly">🖨 CIPHER ONLY</button>
+    <button class="action-btn export-btn" onclick="showExportSettings()" data-i18n="btnImportExport">⇅ IMPORT / EXPORT</button>
+    <button class="action-btn codebook-btn" onclick="showCodebook()" data-i18n="btnCodebook">📋 SCHLÜSSELHEFT</button>
+    <button class="action-btn help-btn" onclick="showHelp()" data-i18n="btnHelp">? HELP / HISTORY</button>
   </div>
 
   <div class="hint-text">
@@ -1973,12 +2040,12 @@
       <div class="help-section">
         <h3 class="help-h3">Encrypting a Message</h3>
         <p>Type directly using your keyboard or click the on-screen keys. Each keypress advances the rotors and lights a lamp showing the ciphertext letter. The output panel groups letters in blocks of 5 — this was standard practice to make Morse transmission easier and to obscure word boundaries.</p>
-        <p>You can also <strong>paste or type</strong> in the Plaintext Input textarea and press <strong>ENCRYPT/DECRYPT</strong> to process the full message at once.</p>
+        <p>You can also <strong>paste or type</strong> in the Plaintext Input textarea and press <strong data-i18n="encDecBtn">ENCRYPT/DECRYPT</strong> to process the full message at once.</p>
       </div>
       <div class="help-section">
         <h3 class="help-h3">Decrypting a Message</h3>
         <p>Enigma is <strong>self-reciprocal</strong>: to decrypt, configure the machine to the <em>exact same settings</em> used to encrypt, then type or paste the ciphertext. The output will be the original plaintext — including any Wehrmacht substitution codes if that mode was used during encryption.</p>
-        <p>Use <strong>RESET POSITIONS</strong> to return rotors to AAA and clear the output before starting a new session.</p>
+        <p>Use <strong data-i18n="btnReset">RESET POSITIONS</strong> to return rotors to AAA and clear the output before starting a new session.</p>
       </div>
       <div class="help-section">
         <h3 class="help-h3">Wehrmacht Encoding — Spaces, Punctuation &amp; Numbers</h3>
@@ -2012,12 +2079,12 @@
           <li><strong>Click drum</strong> — Advance rotor forward one step</li>
           <li><strong>Notch dot (red)</strong> — Lights when a rotor is at its turnover notch position</li>
           <li><strong>ENCODING radio buttons (OFF / GERMAN / ENGLISH)</strong> — OFF passes letters only; GERMAN applies authentic Wehrmacht substitutions (X, ZZ, FRAGE, KLAM, CH→Q, German number words); ENGLISH uses readable English equivalents (STOP, COMMA, QUERY, PAREN, DASH, English number words)</li>
-          <li><strong>RESET POSITIONS</strong> — Returns all rotors to AAA and clears the message</li>
-          <li><strong>DEMO MESSAGE</strong> — Loads a sample message to demonstrate the machine</li>
-          <li><strong>🖨 PRINT</strong> — Full transcript: settings, plugboard, plaintext, and ciphertext</li>
-          <li><strong>🖨 CIPHER ONLY</strong> — Ciphertext only — safe to hand to a radio operator</li>
-          <li><strong>⇅ IMPORT / EXPORT</strong> — Export current settings as JSON or plaintext; import JSON to configure the machine from a saved key</li>
-          <li><strong>📋 SCHLÜSSELHEFT</strong> — Codebook manager: save, load, print, import, and export named daily key entries</li>
+          <li><strong data-i18n="btnReset">RESET POSITIONS</strong> — Returns all rotors to AAA and clears the message</li>
+          <li><strong data-i18n="btnDemo">DEMO MESSAGE</strong> — Loads a sample message to demonstrate the machine</li>
+          <li><strong data-i18n="btnPrint">🖨 PRINT</strong> — Full transcript: settings, plugboard, plaintext, and ciphertext</li>
+          <li><strong data-i18n="btnCipherOnly">🖨 CIPHER ONLY</strong> — Ciphertext only — safe to hand to a radio operator</li>
+          <li><strong data-i18n="btnImportExport">⇅ IMPORT / EXPORT</strong> — Export current settings as JSON or plaintext; import JSON to configure the machine from a saved key</li>
+          <li><strong data-i18n="btnCodebook">📋 SCHLÜSSELHEFT</strong> — Codebook manager: save, load, print, import, and export named daily key entries</li>
           <li><strong>CLEAR ALL (plugboard)</strong> — Removes all plugboard connections</li>
           <li><strong>Click pair badge</strong> — Removes that specific plug connection</li>
         </ul>
@@ -2653,18 +2720,19 @@ function loadDemoMessage() {
 }
 
 function printMessage(mode = 'full') {
+  const t = getPrintStrings();
   const plain = document.getElementById('plain-input').value || '—';
   const cipher = (document.getElementById('cipher-output').dataset.raw || '').replace(/(.{5})/g, '$1 ').trim() || '—';
-  const settings = `Rotors: ${rotorTypes.join('-')} | Positions: ${rotorPositions.map(p=>ALPHABET[p]).join('')} | Reflector: UKW-${selectedReflector}`;
+  const settings = `${t.rotorSectionLabel}: ${rotorTypes.join('-')} | ${t.rotorLabelR.split(' ')[0]} ${t.rotorLabelR.split(' ')[1]}: ${rotorPositions.map(p=>ALPHABET[p]).join('')} | Reflector: UKW-${selectedReflector}`;
   const plugPairs = Object.entries(plugboardPairs).filter(([a,b])=>a<b).map(([a,b])=>a+b).join(' ') || 'None';
 
   const isCipherOnly = mode === 'cipher';
-  const title = isCipherOnly ? 'ENIGMA — CIPHERTEXT TRANSMISSION' : 'ENIGMA — CIPHER TRANSCRIPT';
+  const title = isCipherOnly ? t.printTitleCipher : t.printTitle;
 
   const settingsBlock = isCipherOnly ? '' : `
-    <div class="section"><h3>MACHINE SETTINGS</h3><p>${settings}</p></div>
-    <div class="section"><h3>PLUGBOARD (STECKERBRETT)</h3><p>${plugPairs}</p></div>
-    <div class="section"><h3>PLAINTEXT</h3><p>${plain}</p></div>`;
+    <div class="section"><h3>${t.printSettings}</h3><p>Rotors: ${rotorTypes.join('-')} · Positions: ${rotorPositions.map(p=>ALPHABET[p]).join('')} · Rings: ${ringSettings.map(r=>r+1).join('-')} · Reflector: UKW-${selectedReflector}</p></div>
+    <div class="section"><h3>${t.printPlugboard}</h3><p>${plugPairs}</p></div>
+    <div class="section"><h3>${t.printPlaintext}</h3><p>${plain}</p></div>`;
 
   const printWin = window.open('', '_blank', 'width=700,height=500');
   printWin.document.write(`
@@ -2681,17 +2749,16 @@ function printMessage(mode = 'full') {
         .section p { font-size: 1rem; letter-spacing: 0.12em; line-height: 1.8; word-break: break-all; }
         .cipher-block { font-size: 1.3rem; letter-spacing: 0.2em; line-height: 2.2; word-break: break-all; margin-top: 8px; }
         .classification { border: 1px solid red; color: red; display: inline-block; padding: 3px 12px; font-size: 0.7rem; letter-spacing: 0.2em; margin-bottom: 20px; }
-        .cipher-label { font-size: 0.8rem; letter-spacing: 0.2em; color: #888; margin-bottom: 6px; }
         @media print { body { padding: 20px; } }
       </style>
     </head>
     <body>
       <h1>${title}</h1>
-      <div class="classification">GEHEIME KOMMANDOSACHE</div>
+      <div class="classification">${t.printClassification}</div>
       <div class="meta">${new Date().toLocaleString()}</div>
       ${settingsBlock}
       <div class="section">
-        <h3>${isCipherOnly ? 'CIPHERTEXT' : 'CIPHERTEXT'}</h3>
+        <h3>${t.printCiphertext}</h3>
         <p class="${isCipherOnly ? 'cipher-block' : ''}">${cipher}</p>
       </div>
       <script>window.onload=function(){window.print();}<\/script>
@@ -3311,6 +3378,17 @@ function importCodebook(event) {
 // Print the full codebook
 function printCodebook() {
   if (!codebook.length) { alert('No entries to print.'); return; }
+  const t = getPrintStrings();
+  const lang = currentUILang;
+
+  const headers = {
+    de:   ['DATUM', 'BEZEICHNUNG', 'WALZEN (L→R)', 'START', 'RINGE', 'REFLEKTOR', 'STECKER-PAARE', 'NOTIZEN'],
+    en:   ['DATE', 'DESIGNATION', 'ROTORS (L→R)', 'START', 'RINGS', 'REFLECTOR', 'PLUG PAIRS', 'NOTES'],
+    both: ['DATE / DATUM', 'DESIGNATION', 'ROTORS / WALZEN (L→R)', 'START', 'RINGS', 'REFLECTOR', 'STECKER PAIRS', 'NOTES'],
+  };
+  const ths = (headers[lang] || headers.both).map(h => `<th>${h}</th>`).join('');
+
+  const cbTitle = lang === 'de' ? 'ENIGMA — SCHLÜSSELHEFT' : lang === 'en' ? 'ENIGMA — CODEBOOK' : 'ENIGMA — SCHLÜSSELHEFT / CODEBOOK';
 
   const rows = codebook.map(e => {
     const pos = e.rotorPositions.map(p=>ALPHABET[p]).join('');
@@ -3331,7 +3409,7 @@ function printCodebook() {
 
   const win = window.open('', '_blank', 'width=1000,height=600');
   win.document.write(`
-    <!DOCTYPE html><html><head><title>ENIGMA Schlüsselheft</title>
+    <!DOCTYPE html><html><head><title>${cbTitle}</title>
     <style>
       body{font-family:'Courier New',monospace;padding:30px;background:white;color:black;}
       h1{font-size:1.4rem;letter-spacing:0.4em;border-bottom:3px double black;padding-bottom:8px;margin-bottom:4px;}
@@ -3343,15 +3421,11 @@ function printCodebook() {
       .meta{font-size:0.7rem;color:#666;margin-bottom:20px;}
       @media print{body{padding:15px;}}
     </style></head><body>
-    <h1>ENIGMA — SCHLÜSSELHEFT</h1>
-    <div class="class">GEHEIME KOMMANDOSACHE</div>
+    <h1>${cbTitle}</h1>
+    <div class="class">${t.printClassification}</div>
     <div class="meta">Printed: ${new Date().toLocaleString()} · ${codebook.length} entries</div>
     <table>
-      <thead><tr>
-        <th>DATE</th><th>DESIGNATION</th><th>ROTORS (L→R)</th>
-        <th>START</th><th>RINGS</th><th>REFLECTOR</th>
-        <th>STECKER PAIRS</th><th>NOTES</th>
-      </tr></thead>
+      <thead><tr>${ths}</tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <script>window.onload=function(){window.print();}<\/script>
@@ -3408,9 +3482,173 @@ async function updateCommitHash() {
     }
 }
 
+// ===== UI LANGUAGE (i18n) =====
+const TRANSLATIONS = {
+  de: {
+    subtitle:         'Geheimschreiber — Wehrmacht Chiffriermaschine — Modell I',
+    classification:   'GEHEIME KOMMANDOSACHE — STRENG GEHEIM',
+    rotorSectionLabel:'ROTOREN / WALZEN',
+    rotorLabelL:      'WALZE III (L)',
+    rotorLabelM:      'WALZE II (M)',
+    rotorLabelR:      'WALZE I (R)',
+    ringLabel:        'RING:',
+    rotorHint:        'Walzentrommel klicken oder ▲▼ benutzen. Walzen treten beim Tippen automatisch vor.',
+    lampboardLabel:   'LAMPENFELD',
+    keyboardLabel:    'TASTATUR',
+    plugboardLabel:   'STECKERBRETT',
+    activePairs:      'AKTIVE STECKER-VERBINDUNGEN',
+    noConnections:    'Keine Verbindungen',
+    clearAll:         'ALLE LÖSCHEN',
+    plugHint:         'Zwei Buchsen anklicken zum Verbinden. Paar anklicken zum Trennen.',
+    plaintextLabel:   'KLARTEXT / EINGABE',
+    plaintextPlaceholder: 'Nachricht hier eingeben oder einfügen.',
+    cipherLabel:      'CHIFFRE / AUSGABE',
+    encDecBtn:        'VER-/ENTSCHLÜSSELN',
+    clearBtn:         'LÖSCHEN',
+    encodingLabel:    'KODIERUNG:',
+    encOff:           'AUS',
+    encGerman:        'DEUTSCH',
+    encEnglish:       'ENGLISCH',
+    encHintTitleDe:   'AKTIVE ERSETZUNGEN — DEUTSCH (Wehrmacht/Heer)',
+    encHintTitleEn:   'AKTIVE ERSETZUNGEN — ENGLISCH',
+    btnReset:         'POSITIONEN ZURÜCKSETZEN',
+    btnDemo:          'DEMO-NACHRICHT',
+    btnPrint:         '🖨 DRUCKEN',
+    btnCipherOnly:    '🖨 NUR CHIFFRE',
+    btnImportExport:  '⇅ IMPORT / EXPORT',
+    btnCodebook:      '📋 SCHLÜSSELHEFT',
+    btnHelp:          '? HILFE / GESCHICHTE',
+    decodeHint:       'Zum Entschlüsseln: Walzen auf gleiche Startposition wie beim Verschlüsseln setzen, dann Chiffretext eingeben.',
+    printTitle:       'ENIGMA — CHIFFRIER-PROTOKOLL',
+    printTitleCipher: 'ENIGMA — CHIFFRETEXT-ÜBERMITTLUNG',
+    printClassification: 'GEHEIME KOMMANDOSACHE',
+    printSettings:    'MASCHINENEINSTELLUNG',
+    printPlugboard:   'STECKERBRETT',
+    printPlaintext:   'KLARTEXT',
+    printCiphertext:  'CHIFFRE',
+  },
+  en: {
+    subtitle:         'Secret Writer — Wehrmacht Cipher Machine — Model I',
+    classification:   'TOP SECRET — EYES ONLY',
+    rotorSectionLabel:'ROTORS / SCRAMBLERS',
+    rotorLabelL:      'ROTOR III (LEFT)',
+    rotorLabelM:      'ROTOR II (MID)',
+    rotorLabelR:      'ROTOR I (RIGHT)',
+    ringLabel:        'RING:',
+    rotorHint:        'Click rotor drum or use ▲▼ buttons to set starting position. Rotors advance automatically when typing.',
+    lampboardLabel:   'LAMPBOARD',
+    keyboardLabel:    'KEYBOARD',
+    plugboardLabel:   'PLUGBOARD',
+    activePairs:      'ACTIVE PLUG PAIRS',
+    noConnections:    'No connections',
+    clearAll:         'CLEAR ALL',
+    plugHint:         'Click two sockets to connect. Click pair to remove.',
+    plaintextLabel:   'PLAINTEXT INPUT',
+    plaintextPlaceholder: 'Type or paste message here. Select an encoding mode below.',
+    cipherLabel:      'CIPHERTEXT OUTPUT',
+    encDecBtn:        'ENCRYPT / DECRYPT',
+    clearBtn:         'CLEAR',
+    encodingLabel:    'ENCODING:',
+    encOff:           'OFF',
+    encGerman:        'GERMAN',
+    encEnglish:       'ENGLISH',
+    encHintTitleDe:   'ACTIVE SUBSTITUTIONS — GERMAN (Wehrmacht/Heer)',
+    encHintTitleEn:   'ACTIVE SUBSTITUTIONS — ENGLISH',
+    btnReset:         'RESET POSITIONS',
+    btnDemo:          'DEMO MESSAGE',
+    btnPrint:         '🖨 PRINT',
+    btnCipherOnly:    '🖨 CIPHER ONLY',
+    btnImportExport:  '⇅ IMPORT / EXPORT',
+    btnCodebook:      '📋 CODEBOOK',
+    btnHelp:          '? HELP / HISTORY',
+    decodeHint:       'To decode: set rotors to same start position as encoding, then type or paste cipher text. The Enigma is self-reciprocal.',
+    printTitle:       'ENIGMA — CIPHER TRANSCRIPT',
+    printTitleCipher: 'ENIGMA — CIPHERTEXT TRANSMISSION',
+    printClassification: 'TOP SECRET',
+    printSettings:    'MACHINE SETTINGS',
+    printPlugboard:   'PLUGBOARD',
+    printPlaintext:   'PLAINTEXT',
+    printCiphertext:  'CIPHERTEXT',
+  },
+  both: {
+    subtitle:         'Geheimschreiber — Wehrmacht Cipher Machine — Modell I',
+    classification:   'GEHEIME KOMMANDOSACHE — TOP SECRET',
+    rotorSectionLabel:'ROTOREN / WALZEN',
+    rotorLabelL:      'ROTOR III (L)',
+    rotorLabelM:      'ROTOR II (M)',
+    rotorLabelR:      'ROTOR I (R)',
+    ringLabel:        'RING:',
+    rotorHint:        'Click rotor drum or use ▲▼ buttons to set starting position. Rotors advance automatically when typing.',
+    lampboardLabel:   'LAMPENFELD / LAMPBOARD',
+    keyboardLabel:    'TASTATUR / KEYBOARD',
+    plugboardLabel:   'STECKERBRETT / PLUGBOARD',
+    activePairs:      'AKTIVE STECKER / ACTIVE PAIRS',
+    noConnections:    'No connections',
+    clearAll:         'CLEAR ALL',
+    plugHint:         'Click two sockets to connect. Click pair to remove.',
+    plaintextLabel:   'KLARTEXT / PLAINTEXT INPUT',
+    plaintextPlaceholder: 'Type or paste message here. Select an encoding mode below to auto-convert spaces, punctuation, and numbers.',
+    cipherLabel:      'CHIFFRE AUSGABE / OUTPUT',
+    encDecBtn:        'ENCRYPT / DECRYPT',
+    clearBtn:         'CLEAR',
+    encodingLabel:    'ENCODING:',
+    encOff:           'OFF',
+    encGerman:        'GERMAN',
+    encEnglish:       'ENGLISH',
+    encHintTitleDe:   'ACTIVE SUBSTITUTIONS — GERMAN (Wehrmacht/Heer)',
+    encHintTitleEn:   'ACTIVE SUBSTITUTIONS — ENGLISH',
+    btnReset:         'RESET POSITIONS',
+    btnDemo:          'DEMO MESSAGE',
+    btnPrint:         '🖨 PRINT',
+    btnCipherOnly:    '🖨 CIPHER ONLY',
+    btnImportExport:  '⇅ IMPORT / EXPORT',
+    btnCodebook:      '📋 SCHLÜSSELHEFT',
+    btnHelp:          '? HELP / HISTORY',
+    decodeHint:       'To decode: set rotors to same start position as encoding, then type (or paste) cipher text. The Enigma is self-reciprocal.',
+    printTitle:       'ENIGMA — CIPHER TRANSCRIPT / CHIFFRIER-PROTOKOLL',
+    printTitleCipher: 'ENIGMA — CIPHERTEXT TRANSMISSION / CHIFFRETEXT-ÜBERMITTLUNG',
+    printClassification: 'GEHEIME KOMMANDOSACHE — TOP SECRET',
+    printSettings:    'MACHINE SETTINGS / MASCHINENEINSTELLUNG',
+    printPlugboard:   'PLUGBOARD (STECKERBRETT)',
+    printPlaintext:   'PLAINTEXT / KLARTEXT',
+    printCiphertext:  'CIPHERTEXT / CHIFFRE',
+  }
+};
+
+let currentUILang = 'both';
+
+function setUILang(lang) {
+  currentUILang = lang;
+  const t = TRANSLATIONS[lang];
+
+  // Apply all data-i18n text content
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+
+  // Apply placeholder translations
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (t[key] !== undefined) el.placeholder = t[key];
+  });
+
+  // Special: plug-status only if it currently says a generic "no connections" variant
+  const ps = document.getElementById('plug-status');
+  if (ps && Object.values(TRANSLATIONS).some(tr => ps.textContent.trim() === tr.noConnections)) {
+    ps.textContent = t.noConnections;
+  }
+}
+
+// Expose for use in printMessage
+function getPrintStrings() {
+  return TRANSLATIONS[currentUILang];
+}
+
 init();
 startPositions = [...rotorPositions];
 updateCommitHash();
+setUILang('both');
 
 </script>
 </body>
