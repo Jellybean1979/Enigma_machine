@@ -1306,50 +1306,64 @@
   }
   .help-footer span { font-size: 0.6rem; color: var(--steel-light); letter-spacing: 0.1em; font-family: 'Share Tech Mono', monospace; }
 
-  .x-sep-toggle {
+  .enc-mode-group {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 2px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--brass-dark);
+    border-radius: 3px;
+    padding: 2px 4px;
+  }
+
+  .enc-mode-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--brass-dark);
+    padding-right: 4px;
+    border-right: 1px solid var(--brass-dark);
+    margin-right: 2px;
+  }
+
+  .enc-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--steel-light);
     cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 2px;
+    transition: all 0.12s;
     user-select: none;
     -webkit-user-select: none;
   }
 
-  .x-sep-toggle input[type="checkbox"] {
+  .enc-mode-btn:hover { color: var(--brass); background: rgba(184,134,11,0.08); }
+
+  .enc-mode-btn input[type="radio"] {
     appearance: none;
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
     border: 1px solid var(--brass-dark);
-    border-radius: 2px;
+    border-radius: 50%;
     background: rgba(0,0,0,0.3);
     cursor: pointer;
-    position: relative;
     flex-shrink: 0;
     transition: all 0.1s;
   }
 
-  .x-sep-toggle input[type="checkbox"]:checked {
+  .enc-mode-btn input[type="radio"]:checked {
     background: var(--amber);
     border-color: var(--brass);
+    box-shadow: 0 0 5px rgba(255,183,0,0.5);
   }
 
-  .x-sep-toggle input[type="checkbox"]:checked::after {
-    content: '✓';
-    position: absolute;
-    top: -2px;
-    left: 1px;
-    font-size: 0.65rem;
-    color: var(--bakelite);
-    font-weight: bold;
-  }
-
-  .x-sep-label {
-    font-family: 'Oswald', sans-serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    color: var(--brass);
-  }
+  .enc-mode-btn:has(input:checked) { color: var(--amber); }
 
   .x-sep-hint {
     font-family: 'Share Tech Mono', monospace;
@@ -1362,6 +1376,13 @@
     border-left: 2px solid var(--amber);
     border-radius: 0 2px 2px 0;
   }
+
+  .x-sep-hint-en {
+    border-left-color: #88bbff;
+    background: rgba(100,160,255,0.05);
+  }
+  .x-sep-hint-en .enc-hint-title { color: #88bbff; }
+  .x-sep-hint-en .enc-to { color: #88bbff; }
 
   .enc-hint-title {
     font-family: 'Oswald', sans-serif;
@@ -1543,25 +1564,35 @@
   <div class="tape-section">
     <div class="tape-box">
       <div class="tape-box-label">PLAINTEXT EINGABE / INPUT</div>
-      <textarea class="input-area" id="plain-input" placeholder="Type or paste message here. Enable Wehrmacht encoding to auto-convert punctuation and numbers." oninput="encryptTextarea()"></textarea>
+      <textarea class="input-area" id="plain-input" placeholder="Type or paste message here. Select an encoding mode below to auto-convert spaces, punctuation, and numbers." oninput="encryptTextarea()"></textarea>
       <div class="tape-controls no-print">
         <button class="action-btn" onclick="encryptTextarea()">ENCRYPT/DECRYPT</button>
         <button class="action-btn danger" onclick="clearAll()">CLEAR</button>
-        <label class="x-sep-toggle" title="Converts spaces → X, punctuation, and numbers using authentic Wehrmacht operator codes">
-          <input type="checkbox" id="x-separator" onchange="encryptTextarea()">
-          <span class="x-sep-label">Wehrmacht ENCODING</span>
-        </label>
+        <div class="enc-mode-group">
+          <span class="enc-mode-label">ENCODING:</span>
+          <label class="enc-mode-btn">
+            <input type="radio" name="enc-mode" value="off" checked onchange="encryptTextarea()"> OFF
+          </label>
+          <label class="enc-mode-btn" title="Authentic Wehrmacht/Heer operator substitutions (German)">
+            <input type="radio" name="enc-mode" value="german" onchange="encryptTextarea()"> GERMAN
+          </label>
+          <label class="enc-mode-btn" title="English equivalents — same concept, English words">
+            <input type="radio" name="enc-mode" value="english" onchange="encryptTextarea()"> ENGLISH
+          </label>
+        </div>
       </div>
-      <div class="x-sep-hint" id="x-sep-hint" style="display:none;">
-        <div class="enc-hint-title">ACTIVE SUBSTITUTIONS (Wehrmacht/Heer)</div>
+
+      <!-- German substitution reference -->
+      <div class="x-sep-hint" id="x-sep-hint-german" style="display:none;">
+        <div class="enc-hint-title">ACTIVE SUBSTITUTIONS — GERMAN (Wehrmacht/Heer)</div>
         <div class="enc-hint-grid">
           <span class="enc-pair"><span class="enc-from">SPACE</span><span class="enc-to">X</span></span>
-          <span class="enc-pair"><span class="enc-from">. (period)</span><span class="enc-to">X</span></span>
-          <span class="enc-pair"><span class="enc-from">, (comma)</span><span class="enc-to">ZZ</span></span>
-          <span class="enc-pair"><span class="enc-from">? (question)</span><span class="enc-to">FRAGE</span></span>
-          <span class="enc-pair"><span class="enc-from">( or )</span><span class="enc-to">KLAM</span></span>
-          <span class="enc-pair"><span class="enc-from">" (quote)</span><span class="enc-to">X..X</span></span>
-          <span class="enc-pair"><span class="enc-from">CH</span><span class="enc-to">Q</span></span>
+          <span class="enc-pair"><span class="enc-from">. period</span><span class="enc-to">X</span></span>
+          <span class="enc-pair"><span class="enc-from">, comma</span><span class="enc-to">ZZ</span></span>
+          <span class="enc-pair"><span class="enc-from">? question</span><span class="enc-to">FRAGE</span></span>
+          <span class="enc-pair"><span class="enc-from">( ) paren</span><span class="enc-to">KLAM</span></span>
+          <span class="enc-pair"><span class="enc-from">- dash</span><span class="enc-to">XX</span></span>
+          <span class="enc-pair"><span class="enc-from">CH digraph</span><span class="enc-to">Q</span></span>
           <span class="enc-pair"><span class="enc-from">0</span><span class="enc-to">NULL</span></span>
           <span class="enc-pair"><span class="enc-from">1</span><span class="enc-to">EINZ</span></span>
           <span class="enc-pair"><span class="enc-from">2</span><span class="enc-to">ZWO</span></span>
@@ -1572,6 +1603,29 @@
           <span class="enc-pair"><span class="enc-from">7</span><span class="enc-to">SIEBEN</span></span>
           <span class="enc-pair"><span class="enc-from">8</span><span class="enc-to">AQT</span></span>
           <span class="enc-pair"><span class="enc-from">9</span><span class="enc-to">NEUN</span></span>
+        </div>
+      </div>
+
+      <!-- English substitution reference -->
+      <div class="x-sep-hint x-sep-hint-en" id="x-sep-hint-english" style="display:none;">
+        <div class="enc-hint-title">ACTIVE SUBSTITUTIONS — ENGLISH</div>
+        <div class="enc-hint-grid">
+          <span class="enc-pair"><span class="enc-from">SPACE</span><span class="enc-to">X</span></span>
+          <span class="enc-pair"><span class="enc-from">. period</span><span class="enc-to">STOP</span></span>
+          <span class="enc-pair"><span class="enc-from">, comma</span><span class="enc-to">COMMA</span></span>
+          <span class="enc-pair"><span class="enc-from">? question</span><span class="enc-to">QUERY</span></span>
+          <span class="enc-pair"><span class="enc-from">( ) paren</span><span class="enc-to">PAREN</span></span>
+          <span class="enc-pair"><span class="enc-from">- dash</span><span class="enc-to">DASH</span></span>
+          <span class="enc-pair"><span class="enc-from">0</span><span class="enc-to">ZERO</span></span>
+          <span class="enc-pair"><span class="enc-from">1</span><span class="enc-to">ONE</span></span>
+          <span class="enc-pair"><span class="enc-from">2</span><span class="enc-to">TWO</span></span>
+          <span class="enc-pair"><span class="enc-from">3</span><span class="enc-to">THREE</span></span>
+          <span class="enc-pair"><span class="enc-from">4</span><span class="enc-to">FOUR</span></span>
+          <span class="enc-pair"><span class="enc-from">5</span><span class="enc-to">FIVE</span></span>
+          <span class="enc-pair"><span class="enc-from">6</span><span class="enc-to">SIX</span></span>
+          <span class="enc-pair"><span class="enc-from">7</span><span class="enc-to">SEVEN</span></span>
+          <span class="enc-pair"><span class="enc-from">8</span><span class="enc-to">EIGHT</span></span>
+          <span class="enc-pair"><span class="enc-from">9</span><span class="enc-to">NINE</span></span>
         </div>
       </div>
     </div>
@@ -1928,19 +1982,28 @@
       </div>
       <div class="help-section">
         <h3 class="help-h3">Wehrmacht Encoding — Spaces, Punctuation &amp; Numbers</h3>
-        <p>The real Enigma keyboard had no space bar, punctuation keys, or numerals — only the 26 letters A–Z. German operators therefore agreed on a set of standard letter substitutions to represent everything else. Enable the <strong>Wehrmacht Encoding</strong> checkbox to apply these automatically. When active, typing any of the following on your physical keyboard fires the correct substitution through the machine:</p>
+        <p>The real Enigma keyboard had no space bar, punctuation keys, or numerals — only the 26 letters A–Z. German operators therefore agreed on a set of standard letter substitutions to represent everything else. This simulation offers two encoding modes selectable via the <strong>ENCODING</strong> radio buttons below the input:</p>
+        <p><strong>GERMAN (authentic Wehrmacht/Heer):</strong> Uses the historically accurate substitutions exactly as German operators used them in the field. The CH digraph is globally replaced with Q throughout the message before transmission.</p>
         <ul class="help-list">
-          <li><strong>Space / Period (.)</strong> → <strong>X</strong> — the universal word and sentence separator. Example: PANZERXANGRIFFXBEGINNTX</li>
-          <li><strong>Comma (,)</strong> → <strong>ZZ</strong> — double-Z was the standard comma substitute</li>
-          <li><strong>Question mark (?)</strong> → <strong>FRAGE</strong> — the German word for "question"</li>
-          <li><strong>Parentheses ( ) </strong> → <strong>KLAM</strong> — short for <em>Klammer</em>, German for bracket</li>
-          <li><strong>Hyphen / dash (-)</strong> → <strong>XX</strong> — double-X marked a dash or break</li>
-          <li><strong>CH digraph</strong> → <strong>Q</strong> — CH was universally replaced with Q throughout all text (e.g. ACHT → AQT, NICHT → NIQT)</li>
-          <li><strong>0</strong> → NULL · <strong>1</strong> → EINZ · <strong>2</strong> → ZWO · <strong>3</strong> → DREI · <strong>4</strong> → VIER</li>
-          <li><strong>5</strong> → FUNF · <strong>6</strong> → SEQS · <strong>7</strong> → SIEBEN · <strong>8</strong> → AQT · <strong>9</strong> → NEUN</li>
+          <li><strong>Space / Period (.)</strong> → <strong>X</strong> — universal word and sentence separator. Example: PANZERXANGRIFFXBEGINNTX</li>
+          <li><strong>Comma (,)</strong> → <strong>ZZ</strong></li>
+          <li><strong>Question mark (?)</strong> → <strong>FRAGE</strong> (German: "question")</li>
+          <li><strong>Parentheses ( )</strong> → <strong>KLAM</strong> (short for <em>Klammer</em>: bracket)</li>
+          <li><strong>Hyphen / dash (-)</strong> → <strong>XX</strong></li>
+          <li><strong>CH digraph</strong> → <strong>Q</strong> throughout (e.g. ACHT → AQT, NICHT → NIQT)</li>
+          <li><strong>Digits 0–9</strong> → NULL, EINZ, ZWO, DREI, VIER, FUNF, SEQS, SIEBEN, AQT, NEUN</li>
         </ul>
-        <p>Note that SEQS replaces SECHS (six) and AQT replaces ACHT (eight) — both already apply the CH→Q rule. The receiver, upon decoding, would read back these letter codes and mentally reconstruct the original punctuated text.</p>
-        <p>Foreign proper names and place names were flanked with X on both sides to set them apart from the message body — e.g. XBERLINX or XWINSTONCHURCHILLX (after CH→Q: XWINSTONQURQILLX).</p>
+        <p><strong>ENGLISH:</strong> Same concept, fully English equivalents — easier for English-language messages. No CH→Q substitution is applied.</p>
+        <ul class="help-list">
+          <li><strong>Space</strong> → <strong>X</strong> — word separator remains the same</li>
+          <li><strong>Period (.)</strong> → <strong>STOP</strong></li>
+          <li><strong>Comma (,)</strong> → <strong>COMMA</strong></li>
+          <li><strong>Question mark (?)</strong> → <strong>QUERY</strong></li>
+          <li><strong>Parentheses ( )</strong> → <strong>PAREN</strong></li>
+          <li><strong>Hyphen / dash (-)</strong> → <strong>DASH</strong></li>
+          <li><strong>Digits 0–9</strong> → ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE</li>
+        </ul>
+        <p>When either mode is active, typing those characters on your physical keyboard automatically fires the correct letter sequence through the machine in real time. A reference grid of active substitutions appears below the input field. Foreign proper names and place names were traditionally flanked with X on both sides — e.g. XBERLINX or XLONDONX.</p>
       </div>
       <div class="help-section">
         <h3 class="help-h3">Controls Reference</h3>
@@ -1948,7 +2011,7 @@
           <li><strong>▲ / ▼ buttons</strong> — Step a rotor forward or backward by one position</li>
           <li><strong>Click drum</strong> — Advance rotor forward one step</li>
           <li><strong>Notch dot (red)</strong> — Lights when a rotor is at its turnover notch position</li>
-          <li><strong>Wehrmacht Encoding checkbox</strong> — Converts spaces, punctuation, and digits to historical letter codes in real time</li>
+          <li><strong>ENCODING radio buttons (OFF / GERMAN / ENGLISH)</strong> — OFF passes letters only; GERMAN applies authentic Wehrmacht substitutions (X, ZZ, FRAGE, KLAM, CH→Q, German number words); ENGLISH uses readable English equivalents (STOP, COMMA, QUERY, PAREN, DASH, English number words)</li>
           <li><strong>RESET POSITIONS</strong> — Returns all rotors to AAA and clears the message</li>
           <li><strong>DEMO MESSAGE</strong> — Loads a sample message to demonstrate the machine</li>
           <li><strong>🖨 PRINT</strong> — Full transcript: settings, plugboard, plaintext, and ciphertext</li>
@@ -1981,7 +2044,7 @@
           <li>✔ QWERTZ keyboard layout (German standard, as on the original machine)</li>
           <li>✔ Output grouped in 5-letter blocks as was standard practice</li>
           <li>✔ The electrical signal path is mathematically identical to the historical machine</li>
-          <li>✔ <strong>Wehrmacht operator encoding</strong> — full set of authentic substitutions: X for space/period, ZZ for comma, FRAGE for question mark, KLAM for parentheses, Q for CH, and all digits spelled out in German (EINZ, ZWO, DREI…)</li>
+          <li>✔ <strong>Operator encoding modes</strong> — GERMAN mode uses the full authentic Wehrmacht substitutions (X, ZZ, FRAGE, KLAM, CH→Q, German digits); ENGLISH mode provides equivalent substitutions in English for non-German messages</li>
         </ul>
       </div>
       <div class="help-section">
@@ -2113,7 +2176,7 @@ function buildKeyboard() {
 
   document.addEventListener('keydown', (e) => {
     const letter = e.key.toUpperCase();
-    const useEncoding = document.getElementById('x-separator').checked;
+    const mode = getEncMode();
 
     if (ALPHABET.includes(letter)) {
       e.preventDefault();
@@ -2122,24 +2185,17 @@ function buildKeyboard() {
       if (keyEl) keyEl.classList.add('pressed');
     }
 
-    // When Wehrmacht encoding is on, intercept punctuation/space and type their substitution
-    if (useEncoding) {
-      const punctMap = {
-        ' ': 'X', '.': 'X', ',': 'ZZ', '?': 'FRAGE', '(': 'KLAM', ')': 'KLAM',
-        '"': 'X', '-': 'XX',
-      };
-      const numMap = {
-        '0':'NULL','1':'EINZ','2':'ZWO','3':'DREI','4':'VIER',
-        '5':'FUNF','6':'SEQS','7':'SIEBEN','8':'AQT','9':'NEUN'
-      };
-      if (punctMap[e.key] !== undefined || numMap[e.key] !== undefined) {
+    // Encoding mode: intercept punctuation, digits, and space
+    if (mode === 'german' || mode === 'english') {
+      const punctMap = mode === 'german' ? GERMAN_PUNCT_MAP : ENGLISH_PUNCT_MAP;
+      const numMap   = mode === 'german' ? GERMAN_NUM_MAP   : ENGLISH_NUM_MAP;
+      const sub = punctMap[e.key] ?? numMap[e.key];
+      if (sub !== undefined) {
         e.preventDefault();
-        const sub = punctMap[e.key] || numMap[e.key];
         for (const ch of sub) pressKey(ch);
       }
     } else if (e.key === ' ') {
-      // Space does nothing when encoding is off (Enigma had no space key)
-      e.preventDefault();
+      e.preventDefault(); // space does nothing when encoding is off
     }
 
     if (e.key === 'Backspace') {
@@ -2359,14 +2415,15 @@ function renderGrouped(el, text) {
 }
 
 // ===== TEXTAREA ENCRYPT =====
-// Wehrmacht operator encoding substitution table
+
+function getEncMode() {
+  return document.querySelector('input[name="enc-mode"]:checked')?.value || 'off';
+}
+
+// Wehrmacht/German authentic substitution table
 function applyWehrmachtEncoding(text) {
   let out = text.toUpperCase();
-
-  // CH → Q (must come before other substitutions to avoid double-processing)
   out = out.replace(/CH/g, 'Q');
-
-  // Numbers → spelled out
   out = out.replace(/0/g, 'NULL');
   out = out.replace(/1/g, 'EINZ');
   out = out.replace(/2/g, 'ZWO');
@@ -2377,20 +2434,56 @@ function applyWehrmachtEncoding(text) {
   out = out.replace(/7/g, 'SIEBEN');
   out = out.replace(/8/g, 'AQT');
   out = out.replace(/9/g, 'NEUN');
-
-  // Punctuation substitutions
   out = out.replace(/\?/g, 'FRAGE');
   out = out.replace(/,/g, 'ZZ');
   out = out.replace(/[.]/g, 'X');
   out = out.replace(/[()]/g, 'KLAM');
-  out = out.replace(/"/g, 'X');   // inverted commas use X delimiters
+  out = out.replace(/"/g, 'X');
   out = out.replace(/[-–—]/g, 'XX');
-
-  // Spaces → X
   out = out.replace(/ +/g, 'X');
-
   return out;
 }
+
+// English substitution table
+function applyEnglishEncoding(text) {
+  let out = text.toUpperCase();
+  out = out.replace(/0/g, 'ZERO');
+  out = out.replace(/1/g, 'ONE');
+  out = out.replace(/2/g, 'TWO');
+  out = out.replace(/3/g, 'THREE');
+  out = out.replace(/4/g, 'FOUR');
+  out = out.replace(/5/g, 'FIVE');
+  out = out.replace(/6/g, 'SIX');
+  out = out.replace(/7/g, 'SEVEN');
+  out = out.replace(/8/g, 'EIGHT');
+  out = out.replace(/9/g, 'NINE');
+  out = out.replace(/\?/g, 'QUERY');
+  out = out.replace(/,/g, 'COMMA');
+  out = out.replace(/[.]/g, 'STOP');
+  out = out.replace(/[()]/g, 'PAREN');
+  out = out.replace(/"/g, 'QUOTE');
+  out = out.replace(/[-–—]/g, 'DASH');
+  out = out.replace(/ +/g, 'X');
+  return out;
+}
+
+// Keyboard substitution maps for live typing
+const GERMAN_PUNCT_MAP = {
+  ' ':'X', '.':'X', ',':'ZZ', '?':'FRAGE', '(':'KLAM', ')':'KLAM',
+  '"':'X', '-':'XX', '–':'XX', '—':'XX',
+};
+const GERMAN_NUM_MAP = {
+  '0':'NULL','1':'EINZ','2':'ZWO','3':'DREI','4':'VIER',
+  '5':'FUNF','6':'SEQS','7':'SIEBEN','8':'AQT','9':'NEUN',
+};
+const ENGLISH_PUNCT_MAP = {
+  ' ':'X', '.':'STOP', ',':'COMMA', '?':'QUERY', '(':'PAREN', ')':'PAREN',
+  '"':'QUOTE', '-':'DASH', '–':'DASH', '—':'DASH',
+};
+const ENGLISH_NUM_MAP = {
+  '0':'ZERO','1':'ONE','2':'TWO','3':'THREE','4':'FOUR',
+  '5':'FIVE','6':'SIX','7':'SEVEN','8':'EIGHT','9':'NINE',
+};
 
 function encryptTextarea() {
   recomputeFromScratch();
@@ -2402,19 +2495,17 @@ function recomputeFromScratch() {
   updateAllRotorDisplays();
 
   const inputEl = document.getElementById('plain-input');
-  const useEncoding = document.getElementById('x-separator').checked;
+  const mode = getEncMode();
 
-  // Show/hide hint
-  document.getElementById('x-sep-hint').style.display = useEncoding ? 'block' : 'none';
+  // Show/hide hint panels
+  document.getElementById('x-sep-hint-german').style.display  = mode === 'german'  ? 'block' : 'none';
+  document.getElementById('x-sep-hint-english').style.display = mode === 'english' ? 'block' : 'none';
 
   let raw = inputEl.value;
-  if (useEncoding) {
-    raw = applyWehrmachtEncoding(raw);
-  } else {
-    raw = raw.toUpperCase();
-  }
+  if (mode === 'german')       raw = applyWehrmachtEncoding(raw);
+  else if (mode === 'english') raw = applyEnglishEncoding(raw);
+  else                          raw = raw.toUpperCase();
 
-  // Strip anything that's not A-Z after substitution
   const text = raw.replace(/[^A-Z]/g, '');
 
   const outputEl = document.getElementById('cipher-output');
