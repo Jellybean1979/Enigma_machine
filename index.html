@@ -1357,10 +1357,45 @@
     color: var(--amber);
     letter-spacing: 0.06em;
     margin-top: 5px;
-    padding: 3px 6px;
-    background: rgba(255,183,0,0.06);
+    padding: 6px 8px;
+    background: rgba(255,183,0,0.05);
     border-left: 2px solid var(--amber);
     border-radius: 0 2px 2px 0;
+  }
+
+  .enc-hint-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--brass);
+    margin-bottom: 6px;
+  }
+
+  .enc-hint-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+
+  .enc-pair {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .enc-from {
+    color: var(--steel-light);
+    font-size: 0.6rem;
+  }
+
+  .enc-from::after { content: ' →'; color: var(--brass-dark); }
+
+  .enc-to {
+    color: #00ff88;
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.05em;
   }
 
   /* Scrollbar */
@@ -1508,16 +1543,37 @@
   <div class="tape-section">
     <div class="tape-box">
       <div class="tape-box-label">PLAINTEXT EINGABE / INPUT</div>
-      <textarea class="input-area" id="plain-input" placeholder="Type message here or use keyboard above. Spaces become X separators when enabled." oninput="encryptTextarea()"></textarea>
+      <textarea class="input-area" id="plain-input" placeholder="Type or paste message here. Enable Wehrmacht encoding to auto-convert punctuation and numbers." oninput="encryptTextarea()"></textarea>
       <div class="tape-controls no-print">
         <button class="action-btn" onclick="encryptTextarea()">ENCRYPT/DECRYPT</button>
         <button class="action-btn danger" onclick="clearAll()">CLEAR</button>
-        <label class="x-sep-toggle" title="Historical practice: German operators used X as a word separator since Enigma had no space key">
+        <label class="x-sep-toggle" title="Converts spaces → X, punctuation, and numbers using authentic Wehrmacht operator codes">
           <input type="checkbox" id="x-separator" onchange="encryptTextarea()">
-          <span class="x-sep-label">X WORD SEP.</span>
+          <span class="x-sep-label">Wehrmacht ENCODING</span>
         </label>
       </div>
-      <div class="x-sep-hint" id="x-sep-hint" style="display:none;">Spaces → X  ·  Historical German operator practice (e.g. PANZERXANGRIFFXBEGINNT)</div>
+      <div class="x-sep-hint" id="x-sep-hint" style="display:none;">
+        <div class="enc-hint-title">ACTIVE SUBSTITUTIONS (Wehrmacht/Heer)</div>
+        <div class="enc-hint-grid">
+          <span class="enc-pair"><span class="enc-from">SPACE</span><span class="enc-to">X</span></span>
+          <span class="enc-pair"><span class="enc-from">. (period)</span><span class="enc-to">X</span></span>
+          <span class="enc-pair"><span class="enc-from">, (comma)</span><span class="enc-to">ZZ</span></span>
+          <span class="enc-pair"><span class="enc-from">? (question)</span><span class="enc-to">FRAGE</span></span>
+          <span class="enc-pair"><span class="enc-from">( or )</span><span class="enc-to">KLAM</span></span>
+          <span class="enc-pair"><span class="enc-from">" (quote)</span><span class="enc-to">X..X</span></span>
+          <span class="enc-pair"><span class="enc-from">CH</span><span class="enc-to">Q</span></span>
+          <span class="enc-pair"><span class="enc-from">0</span><span class="enc-to">NULL</span></span>
+          <span class="enc-pair"><span class="enc-from">1</span><span class="enc-to">EINZ</span></span>
+          <span class="enc-pair"><span class="enc-from">2</span><span class="enc-to">ZWO</span></span>
+          <span class="enc-pair"><span class="enc-from">3</span><span class="enc-to">DREI</span></span>
+          <span class="enc-pair"><span class="enc-from">4</span><span class="enc-to">VIER</span></span>
+          <span class="enc-pair"><span class="enc-from">5</span><span class="enc-to">FUNF</span></span>
+          <span class="enc-pair"><span class="enc-from">6</span><span class="enc-to">SEQS</span></span>
+          <span class="enc-pair"><span class="enc-from">7</span><span class="enc-to">SIEBEN</span></span>
+          <span class="enc-pair"><span class="enc-from">8</span><span class="enc-to">AQT</span></span>
+          <span class="enc-pair"><span class="enc-from">9</span><span class="enc-to">NEUN</span></span>
+        </div>
+      </div>
     </div>
     <div class="tape-box">
       <div class="tape-box-label">CHIFFRE AUSGABE / OUTPUT</div>
@@ -2036,19 +2092,35 @@ function buildKeyboard() {
 
   document.addEventListener('keydown', (e) => {
     const letter = e.key.toUpperCase();
+    const useEncoding = document.getElementById('x-separator').checked;
+
     if (ALPHABET.includes(letter)) {
       e.preventDefault();
       pressKey(letter);
       const keyEl = document.getElementById(`key-${letter}`);
       if (keyEl) keyEl.classList.add('pressed');
     }
-    // Space bar types X when separator mode is on
-    if (e.key === ' ' && document.getElementById('x-separator').checked) {
+
+    // When Wehrmacht encoding is on, intercept punctuation/space and type their substitution
+    if (useEncoding) {
+      const punctMap = {
+        ' ': 'X', '.': 'X', ',': 'ZZ', '?': 'FRAGE', '(': 'KLAM', ')': 'KLAM',
+        '"': 'X', '-': 'XX',
+      };
+      const numMap = {
+        '0':'NULL','1':'EINZ','2':'ZWO','3':'DREI','4':'VIER',
+        '5':'FUNF','6':'SEQS','7':'SIEBEN','8':'AQT','9':'NEUN'
+      };
+      if (punctMap[e.key] !== undefined || numMap[e.key] !== undefined) {
+        e.preventDefault();
+        const sub = punctMap[e.key] || numMap[e.key];
+        for (const ch of sub) pressKey(ch);
+      }
+    } else if (e.key === ' ') {
+      // Space does nothing when encoding is off (Enigma had no space key)
       e.preventDefault();
-      pressKey('X');
-      const keyEl = document.getElementById('key-X');
-      if (keyEl) { keyEl.classList.add('pressed'); setTimeout(() => keyEl.classList.remove('pressed'), 120); }
     }
+
     if (e.key === 'Backspace') {
       e.preventDefault();
       backspaceInput();
@@ -2266,6 +2338,39 @@ function renderGrouped(el, text) {
 }
 
 // ===== TEXTAREA ENCRYPT =====
+// Wehrmacht operator encoding substitution table
+function applyWehrmachtEncoding(text) {
+  let out = text.toUpperCase();
+
+  // CH → Q (must come before other substitutions to avoid double-processing)
+  out = out.replace(/CH/g, 'Q');
+
+  // Numbers → spelled out
+  out = out.replace(/0/g, 'NULL');
+  out = out.replace(/1/g, 'EINZ');
+  out = out.replace(/2/g, 'ZWO');
+  out = out.replace(/3/g, 'DREI');
+  out = out.replace(/4/g, 'VIER');
+  out = out.replace(/5/g, 'FUNF');
+  out = out.replace(/6/g, 'SEQS');
+  out = out.replace(/7/g, 'SIEBEN');
+  out = out.replace(/8/g, 'AQT');
+  out = out.replace(/9/g, 'NEUN');
+
+  // Punctuation substitutions
+  out = out.replace(/\?/g, 'FRAGE');
+  out = out.replace(/,/g, 'ZZ');
+  out = out.replace(/[.]/g, 'X');
+  out = out.replace(/[()]/g, 'KLAM');
+  out = out.replace(/"/g, 'X');   // inverted commas use X delimiters
+  out = out.replace(/[-–—]/g, 'XX');
+
+  // Spaces → X
+  out = out.replace(/ +/g, 'X');
+
+  return out;
+}
+
 function encryptTextarea() {
   recomputeFromScratch();
 }
@@ -2276,14 +2381,19 @@ function recomputeFromScratch() {
   updateAllRotorDisplays();
 
   const inputEl = document.getElementById('plain-input');
-  const useXSep = document.getElementById('x-separator').checked;
+  const useEncoding = document.getElementById('x-separator').checked;
 
   // Show/hide hint
-  document.getElementById('x-sep-hint').style.display = useXSep ? 'block' : 'none';
+  document.getElementById('x-sep-hint').style.display = useEncoding ? 'block' : 'none';
 
-  // Convert spaces to X if separator mode is on, then strip non-alpha
-  let raw = inputEl.value.toUpperCase();
-  if (useXSep) raw = raw.replace(/ +/g, 'X');
+  let raw = inputEl.value;
+  if (useEncoding) {
+    raw = applyWehrmachtEncoding(raw);
+  } else {
+    raw = raw.toUpperCase();
+  }
+
+  // Strip anything that's not A-Z after substitution
   const text = raw.replace(/[^A-Z]/g, '');
 
   const outputEl = document.getElementById('cipher-output');
