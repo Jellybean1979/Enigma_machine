@@ -1907,24 +1907,40 @@
         <h3 class="help-h3">Quick Start</h3>
         <ol class="help-list ordered">
           <li>Both sender and receiver must configure their machines <strong>identically</strong> before communicating.</li>
-          <li>Set the <strong>rotor types</strong> using the dropdown under each drum (e.g. I, II, III).</li>
+          <li>Set the <strong>rotor types</strong> using the dropdown under each drum (e.g. III, II, I).</li>
           <li>Set the <strong>ring settings</strong> (Ringstellung) using the number input below each rotor selector.</li>
           <li>Set the <strong>starting positions</strong> using the ▲▼ buttons or by clicking the drum to step forward.</li>
           <li>Wire up to 10 <strong>plugboard pairs</strong> by clicking any two sockets on the Steckerbrett.</li>
           <li>Select your <strong>reflector</strong> (UKW-B is standard Wehrmacht; UKW-C was used in some contexts).</li>
-          <li>Type your message using the on-screen keyboard or your physical keyboard.</li>
-          <li>Read the encrypted output from the <strong>CHIFFRE AUSGABE</strong> panel.</li>
+          <li>Optionally enable <strong>Wehrmacht Encoding</strong> to automatically convert spaces, punctuation, and numbers into their historical letter substitutions.</li>
+          <li>Type your message using the on-screen keyboard or your physical keyboard, then read the encrypted output from the <strong>CHIFFRE AUSGABE</strong> panel.</li>
         </ol>
       </div>
       <div class="help-section">
         <h3 class="help-h3">Encrypting a Message</h3>
         <p>Type directly using your keyboard or click the on-screen keys. Each keypress advances the rotors and lights a lamp showing the ciphertext letter. The output panel groups letters in blocks of 5 — this was standard practice to make Morse transmission easier and to obscure word boundaries.</p>
-        <p>You can also <strong>paste or type</strong> in the Plaintext Input textarea and press <strong>ENCRYPT/DECRYPT</strong> to process the full message at once. Note: non-alphabetic characters are ignored (spaces, numbers, punctuation).</p>
+        <p>You can also <strong>paste or type</strong> in the Plaintext Input textarea and press <strong>ENCRYPT/DECRYPT</strong> to process the full message at once.</p>
       </div>
       <div class="help-section">
         <h3 class="help-h3">Decrypting a Message</h3>
-        <p>Enigma is <strong>self-reciprocal</strong>: to decrypt, simply configure the machine to the <em>exact same settings</em> used to encrypt, then type (or paste) the ciphertext. The output will be the original plaintext. This is Enigma's most elegant property — the same machine and same settings work in both directions.</p>
-        <p>Use <strong>RESET POSITIONS</strong> to return rotors to AAA (000) and clear the output before starting a new decryption session.</p>
+        <p>Enigma is <strong>self-reciprocal</strong>: to decrypt, configure the machine to the <em>exact same settings</em> used to encrypt, then type or paste the ciphertext. The output will be the original plaintext — including any Wehrmacht substitution codes if that mode was used during encryption.</p>
+        <p>Use <strong>RESET POSITIONS</strong> to return rotors to AAA and clear the output before starting a new session.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Wehrmacht Encoding — Spaces, Punctuation &amp; Numbers</h3>
+        <p>The real Enigma keyboard had no space bar, punctuation keys, or numerals — only the 26 letters A–Z. German operators therefore agreed on a set of standard letter substitutions to represent everything else. Enable the <strong>Wehrmacht Encoding</strong> checkbox to apply these automatically. When active, typing any of the following on your physical keyboard fires the correct substitution through the machine:</p>
+        <ul class="help-list">
+          <li><strong>Space / Period (.)</strong> → <strong>X</strong> — the universal word and sentence separator. Example: PANZERXANGRIFFXBEGINNTX</li>
+          <li><strong>Comma (,)</strong> → <strong>ZZ</strong> — double-Z was the standard comma substitute</li>
+          <li><strong>Question mark (?)</strong> → <strong>FRAGE</strong> — the German word for "question"</li>
+          <li><strong>Parentheses ( ) </strong> → <strong>KLAM</strong> — short for <em>Klammer</em>, German for bracket</li>
+          <li><strong>Hyphen / dash (-)</strong> → <strong>XX</strong> — double-X marked a dash or break</li>
+          <li><strong>CH digraph</strong> → <strong>Q</strong> — CH was universally replaced with Q throughout all text (e.g. ACHT → AQT, NICHT → NIQT)</li>
+          <li><strong>0</strong> → NULL · <strong>1</strong> → EINZ · <strong>2</strong> → ZWO · <strong>3</strong> → DREI · <strong>4</strong> → VIER</li>
+          <li><strong>5</strong> → FUNF · <strong>6</strong> → SEQS · <strong>7</strong> → SIEBEN · <strong>8</strong> → AQT · <strong>9</strong> → NEUN</li>
+        </ul>
+        <p>Note that SEQS replaces SECHS (six) and AQT replaces ACHT (eight) — both already apply the CH→Q rule. The receiver, upon decoding, would read back these letter codes and mentally reconstruct the original punctuated text.</p>
+        <p>Foreign proper names and place names were flanked with X on both sides to set them apart from the message body — e.g. XBERLINX or XWINSTONCHURCHILLX (after CH→Q: XWINSTONQURQILLX).</p>
       </div>
       <div class="help-section">
         <h3 class="help-h3">Controls Reference</h3>
@@ -1932,17 +1948,21 @@
           <li><strong>▲ / ▼ buttons</strong> — Step a rotor forward or backward by one position</li>
           <li><strong>Click drum</strong> — Advance rotor forward one step</li>
           <li><strong>Notch dot (red)</strong> — Lights when a rotor is at its turnover notch position</li>
-          <li><strong>RESET POSITIONS</strong> — Returns all rotors to AAA and clears message</li>
+          <li><strong>Wehrmacht Encoding checkbox</strong> — Converts spaces, punctuation, and digits to historical letter codes in real time</li>
+          <li><strong>RESET POSITIONS</strong> — Returns all rotors to AAA and clears the message</li>
           <li><strong>DEMO MESSAGE</strong> — Loads a sample message to demonstrate the machine</li>
-          <li><strong>PRINT</strong> — Opens a formatted print dialog with machine settings and message</li>
-          <li><strong>SAVE / LOAD SETTINGS</strong> — Saves/loads all machine settings to browser storage</li>
+          <li><strong>🖨 PRINT</strong> — Full transcript: settings, plugboard, plaintext, and ciphertext</li>
+          <li><strong>🖨 CIPHER ONLY</strong> — Ciphertext only — safe to hand to a radio operator</li>
+          <li><strong>⇅ IMPORT / EXPORT</strong> — Export current settings as JSON or plaintext; import JSON to configure the machine from a saved key</li>
+          <li><strong>📋 SCHLÜSSELHEFT</strong> — Codebook manager: save, load, print, import, and export named daily key entries</li>
           <li><strong>CLEAR ALL (plugboard)</strong> — Removes all plugboard connections</li>
           <li><strong>Click pair badge</strong> — Removes that specific plug connection</li>
         </ul>
       </div>
       <div class="help-section">
         <h3 class="help-h3">Historical Operating Procedure</h3>
-        <p>Real German operators followed strict daily key sheets (<em>Schlüsselheft</em>) distributed in advance. Each day had a new set of rotor order, ring settings, plugboard connections, and a ground setting. The operator would first set the machine to the day's ground settings, then type an <em>indicator</em> (a chosen 3-letter starting position, repeated twice as an error check), which the receiver used to set their rotors before decoding the actual message. Many Enigma breaks at Bletchley came from operators choosing predictable indicators (like their girlfriend's initials or "AAA") or from lazy re-use of settings.</p>
+        <p>Real German operators followed strict daily key sheets (<em>Schlüsselheft</em>) distributed monthly in advance, listing a different configuration for each day of the month. Each day's entry specified the rotor order, ring settings, plugboard connections, and a ground setting. The operator would first set the machine to the day's ground settings, then type a self-chosen 3-letter <em>indicator</em> (repeated twice as an error check) encrypted under those settings. The receiver used the decoded indicator to set their own rotor starting positions before decoding the actual message body.</p>
+        <p>Many Enigma breaks at Bletchley Park came from operators choosing predictable indicators (a girlfriend's initials, "AAA", or "HIT" for Hitler), reusing the previous day's settings, or sending stereotyped message openings — cribs like WETTER (weather report), KEINE BESONDEREN EREIGNISSE (nothing to report), or HEIL HITLER at the end. These predictable patterns gave the Bombe machines a known fragment of plaintext to test rotor positions against.</p>
       </div>
     </div>
 
@@ -1961,6 +1981,7 @@
           <li>✔ QWERTZ keyboard layout (German standard, as on the original machine)</li>
           <li>✔ Output grouped in 5-letter blocks as was standard practice</li>
           <li>✔ The electrical signal path is mathematically identical to the historical machine</li>
+          <li>✔ <strong>Wehrmacht operator encoding</strong> — full set of authentic substitutions: X for space/period, ZZ for comma, FRAGE for question mark, KLAM for parentheses, Q for CH, and all digits spelled out in German (EINZ, ZWO, DREI…)</li>
         </ul>
       </div>
       <div class="help-section">
