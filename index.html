@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENIGMA — Wehrmacht Cipher Machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Share+Tech+Mono&family=Oswald:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brass: #b8860b;
+    --brass-light: #d4a017;
+    --brass-dark: #8b6508;
+    --steel: #4a4a4a;
+    --steel-light: #6a6a6a;
+    --bakelite: #2a1f0e;
+    --bakelite-light: #3d2e14;
+    --cream: #f5ead0;
+    --amber: #ffb700;
+    --red: #cc2200;
+    --green-led: #00ff88;
+    --bg-dark: #1a1208;
+    --scratch: rgba(255,255,255,0.03);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d0a05;
+    color: var(--cream);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px),
+      radial-gradient(ellipse at center, #1c1408 0%, #080503 100%);
+  }
+
+  .machine-header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .machine-header h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    color: var(--brass-light);
+    text-shadow: 0 0 30px rgba(184,134,11,0.5), 0 2px 4px rgba(0,0,0,0.8);
+    text-transform: uppercase;
+  }
+
+  .machine-header .subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--steel-light);
+    letter-spacing: 0.18em;
+    margin-top: 4px;
+  }
+
+  .classification {
+    display: inline-block;
+    border: 1px solid var(--red);
+    color: var(--red);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    padding: 3px 12px;
+    margin-top: 8px;
+    text-shadow: 0 0 8px rgba(204,34,0,0.6);
+  }
+
+  #versionTag {
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: normal;
+    color: var(--brass-dark);
+    letter-spacing: 0.15em;
+    margin-top: 6px;
+    font-size: 0.7rem !important;
+  }
+
+  .machine-body {
+    background: linear-gradient(160deg, var(--bakelite-light) 0%, var(--bakelite) 100%);
+    border: 3px solid var(--brass-dark);
+    border-radius: 8px;
+    padding: 24px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow:
+      0 0 0 1px rgba(184,134,11,0.2),
+      0 8px 40px rgba(0,0,0,0.8),
+      inset 0 1px 0 rgba(255,255,255,0.05),
+      inset 0 0 60px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .machine-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.005) 10px, rgba(255,255,255,0.005) 20px);
+    pointer-events: none;
+  }
+
+  /* ROTOR SECTION */
+  .rotor-section {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .rotor-section-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--bakelite);
+    padding: 0 8px;
+    font-size: 0.65rem;
+    color: var(--brass);
+    letter-spacing: 0.2em;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .rotor-assembly {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rotor-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.65rem;
+    color: var(--brass);
+    letter-spacing: 0.15em;
+  }
+
+  .rotor-drum {
+    width: 80px;
+    height: 120px;
+    background: linear-gradient(180deg, #3a3020 0%, #1e1810 50%, #3a3020 100%);
+    border: 2px solid var(--brass-dark);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 15px rgba(0,0,0,0.6),
+      0 2px 8px rgba(0,0,0,0.5);
+    cursor: pointer;
+  }
+
+  .rotor-drum::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 28px;
+    background: rgba(184,134,11,0.15);
+    border-top: 1px solid rgba(184,134,11,0.4);
+    border-bottom: 1px solid rgba(184,134,11,0.4);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .rotor-tape {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .rotor-letter {
+    width: 100%;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cream);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+
+  .rotor-letter.active {
+    color: var(--amber);
+    text-shadow: 0 0 8px var(--amber);
+  }
+
+  .rotor-controls {
+    display: flex;
+    gap: 6px;
+  }
+
+  .rotor-btn {
+    width: 32px;
+    height: 22px;
+    background: linear-gradient(180deg, var(--brass) 0%, var(--brass-dark) 100%);
+    border: 1px solid var(--brass-dark);
+    border-radius: 3px;
+    color: var(--bakelite);
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    transition: all 0.1s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+
+  .rotor-btn:hover { filter: brightness(1.2); }
+  .rotor-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+
+  .rotor-select-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .rotor-select {
+    background: var(--bakelite);
+    border: 1px solid var(--brass-dark);
+    color: var(--brass-light);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    outline: none;
+    width: 80px;
+  }
+
+  /* REFLECTOR */
+  .reflector-assembly {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .reflector-drum {
+    width: 60px;
+    height: 120px;
+    background: linear-gradient(180deg, #2a3020 0%, #161e10 50%, #2a3020 100%);
+    border: 2px solid #3a5a20;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.4rem;
+    color: #6a9a30;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.6), 0 0 10px rgba(60,100,20,0.2);
+  }
+
+  .reflector-select {
+    background: var(--bakelite);
+    border: 1px solid #3a5a20;
+    color: #6a9a30;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    outline: none;
+    width: 60px;
+  }
+
+  /* LAMPBOARD */
+  .lampboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .lampboard-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--bakelite);
+    padding: 0 8px;
+    font-size: 0.65rem;
+    color: var(--brass);
+    letter-spacing: 0.2em;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .lamp-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .lamp {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #3a2a00, #1a1200);
+    border: 2px solid #4a3a10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #5a4a20;
+    transition: all 0.08s;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .lamp.lit {
+    background: radial-gradient(circle at 40% 35%, #fff8c0, #ffcc00, #ff8800);
+    border-color: var(--amber);
+    color: #5a3000;
+    box-shadow:
+      0 0 12px rgba(255,200,0,0.9),
+      0 0 24px rgba(255,160,0,0.6),
+      0 0 40px rgba(255,100,0,0.3),
+      inset 0 1px 3px rgba(255,255,200,0.5);
+    text-shadow: 0 0 4px rgba(255,200,0,0.5);
+  }
+
+  /* KEYBOARD */
+  .keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .keyboard-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--bakelite);
+    padding: 0 8px;
+    font-size: 0.65rem;
+    color: var(--brass);
+    letter-spacing: 0.2em;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .key-row {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .key {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #e8dcc0 0%, #c8b890 40%, #a89870 100%);
+    border: 2px solid #7a6840;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2a1e08;
+    cursor: pointer;
+    transition: all 0.08s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.3);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .key:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  .key:active, .key.pressed {
+    transform: translateY(2px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5), inset 0 2px 4px rgba(0,0,0,0.3);
+    filter: brightness(0.85);
+  }
+
+  /* PLUGBOARD */
+  .plugboard {
+    padding: 16px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .plugboard-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--bakelite);
+    padding: 0 8px;
+    font-size: 0.65rem;
+    color: var(--brass);
+    letter-spacing: 0.2em;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .plugboard-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .plugboard-sockets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .plug-socket {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .socket-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.6rem;
+    color: var(--brass);
+  }
+
+  .socket {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #0a0806;
+    border: 2px solid var(--brass-dark);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);
+  }
+
+  .socket:hover { border-color: var(--brass-light); }
+
+  .socket.selected {
+    border-color: var(--amber);
+    box-shadow: 0 0 8px rgba(255,183,0,0.6), inset 0 2px 4px rgba(0,0,0,0.8);
+  }
+
+  .socket.plugged {
+    background: radial-gradient(circle at 40% 35%, #afffda 0%, #00ff88 40%, #00aa55 100%);
+    border-color: #00ff88;
+    box-shadow:
+      0 0 8px rgba(0,255,136,0.9),
+      0 0 18px rgba(0,255,136,0.5),
+      0 0 32px rgba(0,255,136,0.2),
+      inset 0 1px 3px rgba(255,255,255,0.4);
+  }
+
+  .plug-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 160px;
+  }
+
+  .plug-status {
+    font-size: 0.65rem;
+    color: var(--steel-light);
+    line-height: 1.6;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  .plug-pair {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(184,134,11,0.15);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin: 2px;
+    cursor: pointer;
+    font-size: 0.65rem;
+  }
+
+  .plug-pair:hover { background: rgba(204,34,0,0.2); border-color: var(--red); }
+
+  .plug-pair .remove-plug { color: var(--red); font-size: 0.7rem; }
+
+  .action-btn {
+    background: linear-gradient(180deg, var(--brass) 0%, var(--brass-dark) 100%);
+    border: 1px solid var(--brass-dark);
+    color: var(--bakelite);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.1s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    font-weight: 600;
+  }
+
+  .action-btn:hover { filter: brightness(1.15); }
+  .action-btn:active { transform: translateY(1px); }
+
+  .action-btn.danger {
+    background: linear-gradient(180deg, #cc3300 0%, #881100 100%);
+    border-color: #661100;
+    color: #ffcccc;
+  }
+
+  /* MESSAGE TAPE */
+  .tape-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .tape-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    padding: 14px;
+    position: relative;
+  }
+
+  .tape-box-label {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    background: var(--bakelite);
+    padding: 0 8px;
+    font-size: 0.65rem;
+    color: var(--brass);
+    letter-spacing: 0.2em;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .tape-output {
+    font-family: 'Special Elite', cursive;
+    font-size: 1.15rem;
+    color: var(--cream);
+    letter-spacing: 0.15em;
+    min-height: 60px;
+    word-break: break-all;
+    line-height: 1.9;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .tape-output .group {
+    display: inline-block;
+    margin-right: 8px;
+  }
+
+  .input-area {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 3px;
+    color: var(--cream);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    padding: 8px;
+    letter-spacing: 0.08em;
+    resize: none;
+    outline: none;
+    min-height: 60px;
+  }
+
+  .input-area:focus { border-color: var(--brass); }
+
+  .tape-controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* CONTROLS BAR */
+  .controls-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 12px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+
+  /* WIRE VISUAL for plugboard */
+  .wire-canvas {
+    width: 100%;
+    height: 60px;
+    margin-top: 8px;
+  }
+
+  /* Print Styles */
+  @media print {
+    body {
+      background: white !important;
+      color: black !important;
+    }
+    .machine-body {
+      border: 2px solid black !important;
+      box-shadow: none !important;
+      background: white !important;
+    }
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    .tape-output { color: black !important; background: #f9f9f9 !important; border: 1px solid #ccc !important; }
+    .lampboard, .keyboard, .rotor-section, .controls-bar { display: none !important; }
+    .tape-section { grid-template-columns: 1fr !important; }
+    .plugboard { border: 1px solid #888 !important; }
+  }
+
+  .print-only { display: none; }
+
+  /* Flicker animation */
+  @keyframes flicker {
+    0%,100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.8; }
+    94% { opacity: 1; }
+    96% { opacity: 0.9; }
+    97% { opacity: 1; }
+  }
+
+  .machine-header h1 { animation: flicker 8s infinite; }
+
+  @keyframes rotor-spin-anim {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(-360deg); }
+  }
+
+  .spinning {
+    animation: spin-flash 0.15s ease-out;
+  }
+
+  @keyframes spin-flash {
+    0% { filter: brightness(2); }
+    100% { filter: brightness(1); }
+  }
+
+  /* Ring setting */
+  .ring-control {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.6rem;
+    color: var(--brass);
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .ring-input {
+    width: 30px;
+    background: var(--bakelite);
+    border: 1px solid var(--brass-dark);
+    color: var(--brass-light);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    padding: 1px 3px;
+    border-radius: 2px;
+    text-align: center;
+    outline: none;
+  }
+
+  /* Step indicator */
+  .step-counter {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--steel-light);
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+
+  /* Notch indicator dots */
+  .notch-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 4px var(--red);
+    margin: 0 auto;
+  }
+
+  .notch-dot.inactive {
+    background: #333;
+    box-shadow: none;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--brass-dark), transparent);
+    margin: 16px 0;
+  }
+
+  .hint-text {
+    font-size: 0.6rem;
+    color: var(--steel-light);
+    text-align: center;
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  /* HELP BUTTON */
+  .help-btn {
+    background: linear-gradient(180deg, #1a4a2a 0%, #0d2a18 100%);
+    border-color: #2a6a3a;
+    color: #00ff88;
+    text-shadow: 0 0 6px rgba(0,255,136,0.4);
+  }
+  .help-btn:hover { filter: brightness(1.2); box-shadow: 0 0 10px rgba(0,255,136,0.2); }
+
+  /* HELP OVERLAY */
+  .help-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .help-overlay.active { display: flex; }
+
+  .help-modal {
+    background: linear-gradient(160deg, #1e1608 0%, #120e06 100%);
+    border: 2px solid var(--brass-dark);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 780px;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(184,134,11,0.15);
+    overflow: hidden;
+  }
+
+  .help-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--brass-dark);
+    background: rgba(0,0,0,0.3);
+    flex-shrink: 0;
+  }
+
+  .help-title-block { display: flex; align-items: center; gap: 12px; }
+
+  .help-eagle { font-size: 1.8rem; color: var(--brass); text-shadow: 0 0 10px rgba(184,134,11,0.5); }
+
+  .help-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--brass-light);
+  }
+
+  .help-subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--steel-light);
+    letter-spacing: 0.15em;
+    margin-top: 2px;
+  }
+
+  .help-close {
+    background: transparent;
+    border: 1px solid var(--brass-dark);
+    color: var(--brass);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    letter-spacing: 0.1em;
+    transition: all 0.1s;
+  }
+  .help-close:hover { background: rgba(204,34,0,0.2); border-color: var(--red); color: #ff8888; }
+
+  .help-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--brass-dark);
+    background: rgba(0,0,0,0.2);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .help-tab {
+    background: transparent;
+    border: none;
+    border-right: 1px solid rgba(184,134,11,0.2);
+    color: var(--steel-light);
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .help-tab:hover { color: var(--brass); background: rgba(184,134,11,0.05); }
+  .help-tab.active { color: var(--amber); border-bottom: 2px solid var(--amber); background: rgba(255,183,0,0.05); }
+
+  .help-content { overflow-y: auto; padding: 20px 24px; flex: 1; min-height: 0; }
+  .help-content.hidden { display: none; }
+
+  .help-section { margin-bottom: 22px; }
+
+  .help-section p {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: #d4c8a8;
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+
+  .help-h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    color: var(--brass-light);
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(184,134,11,0.2);
+    text-transform: uppercase;
+  }
+
+  .help-list { list-style: none; padding: 0; margin: 0 0 8px 0; }
+  .help-list li {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: #c8bc9a;
+    padding: 4px 0 4px 18px;
+    position: relative;
+    line-height: 1.65;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .help-list li::before { content: '—'; position: absolute; left: 0; color: var(--brass-dark); }
+  .help-list.ordered { counter-reset: help-counter; }
+  .help-list.ordered li { counter-increment: help-counter; }
+  .help-list.ordered li::before { content: counter(help-counter) '.'; color: var(--brass); font-family: 'Oswald', sans-serif; font-size: 0.7rem; }
+  .help-list.check li { color: #a8d4a8; padding-left: 4px; }
+  .help-list.check li::before { content: ''; }
+  .help-list.cross li { color: #d4a8a8; padding-left: 4px; }
+  .help-list.cross li::before { content: ''; }
+
+  .signal-path {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(184,134,11,0.2);
+    border-radius: 4px;
+    padding: 12px;
+    margin: 10px 0;
+  }
+  .sp-node { font-family: 'Oswald', sans-serif; font-size: 0.6rem; padding: 4px 8px; border-radius: 3px; letter-spacing: 0.1em; background: rgba(184,134,11,0.15); border: 1px solid rgba(184,134,11,0.3); color: var(--cream); white-space: nowrap; }
+  .sp-node.plug { background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.3); color: #a0ffcc; }
+  .sp-node.rotor { background: rgba(184,134,11,0.2); border-color: rgba(184,134,11,0.4); color: var(--amber); }
+  .sp-node.ref { background: rgba(60,120,20,0.2); border-color: rgba(60,200,20,0.3); color: #88ff44; }
+  .sp-node.lamp { background: rgba(255,200,0,0.15); border-color: rgba(255,200,0,0.4); color: #ffdd88; }
+  .sp-arrow { color: var(--brass-dark); font-size: 0.75rem; }
+
+  .test-vector { background: rgba(0,0,0,0.4); border: 1px solid rgba(0,255,136,0.2); border-radius: 4px; padding: 12px 16px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; }
+  .tv-row { display: flex; gap: 12px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .tv-label { color: var(--brass); min-width: 130px; }
+  .tv-val { color: #a0ffcc; }
+
+  .help-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid var(--brass-dark);
+    background: rgba(0,0,0,0.3);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .help-footer span { font-size: 0.6rem; color: var(--steel-light); letter-spacing: 0.1em; font-family: 'Share Tech Mono', monospace; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+  ::-webkit-scrollbar-thumb { background: var(--brass-dark); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="machine-header">
+  <h1>ENIGMA</h1>
+  <div class="subtitle">Geheimschreiber — Wehrmacht Cipher Machine — Modell I</div>
+  <div class="classification">GEHEIME KOMMANDOSACHE — TOP SECRET</div>
+  <strong id="versionTag" style="font-size: 0.8em; display: block;">
+    by Gary Langley — loading version…
+  </strong>
+</div>
+
+<div class="machine-body">
+
+  <!-- ROTOR SECTION -->
+  <div class="rotor-section">
+    <div class="rotor-section-label">ROTOREN / WALZEN</div>
+
+    <!-- Reflector -->
+    <div class="reflector-assembly">
+      <div class="rotor-label">UKW</div>
+      <div class="reflector-drum" id="reflector-drum">B</div>
+      <select class="reflector-select" id="reflector-select" onchange="setReflector(this.value)">
+        <option value="B">UKW-B</option>
+        <option value="C">UKW-C</option>
+      </select>
+    </div>
+
+    <!-- Rotor 3 (Leftmost) -->
+    <div class="rotor-assembly">
+      <div class="rotor-label">ROTOR III (L)</div>
+      <div class="rotor-drum" id="drum-0" onclick="advanceRotor(0)">
+        <div class="rotor-tape" id="tape-0"></div>
+      </div>
+      <div class="notch-dot inactive" id="notch-0"></div>
+      <div class="rotor-controls">
+        <button class="rotor-btn" onclick="stepRotor(0, 1)">▲</button>
+        <button class="rotor-btn" onclick="stepRotor(0, -1)">▼</button>
+      </div>
+      <select class="rotor-select" id="rotor-select-0" onchange="setRotorType(0, this.value)">
+        <option value="I">Rotor I</option>
+        <option value="II">Rotor II</option>
+        <option value="III" selected>Rotor III</option>
+        <option value="IV">Rotor IV</option>
+        <option value="V">Rotor V</option>
+      </select>
+      <div class="ring-control">
+        RING: <input type="number" class="ring-input" id="ring-0" min="1" max="26" value="1" onchange="setRing(0, this.value)">
+      </div>
+    </div>
+
+    <!-- Rotor 2 (Middle) -->
+    <div class="rotor-assembly">
+      <div class="rotor-label">ROTOR II (M)</div>
+      <div class="rotor-drum" id="drum-1" onclick="advanceRotor(1)">
+        <div class="rotor-tape" id="tape-1"></div>
+      </div>
+      <div class="notch-dot inactive" id="notch-1"></div>
+      <div class="rotor-controls">
+        <button class="rotor-btn" onclick="stepRotor(1, 1)">▲</button>
+        <button class="rotor-btn" onclick="stepRotor(1, -1)">▼</button>
+      </div>
+      <select class="rotor-select" id="rotor-select-1" onchange="setRotorType(1, this.value)">
+        <option value="I">Rotor I</option>
+        <option value="II" selected>Rotor II</option>
+        <option value="III">Rotor III</option>
+        <option value="IV">Rotor IV</option>
+        <option value="V">Rotor V</option>
+      </select>
+      <div class="ring-control">
+        RING: <input type="number" class="ring-input" id="ring-1" min="1" max="26" value="1" onchange="setRing(1, this.value)">
+      </div>
+    </div>
+
+    <!-- Rotor 1 (Rightmost) -->
+    <div class="rotor-assembly">
+      <div class="rotor-label">ROTOR I (R)</div>
+      <div class="rotor-drum" id="drum-2" onclick="advanceRotor(2)">
+        <div class="rotor-tape" id="tape-2"></div>
+      </div>
+      <div class="notch-dot inactive" id="notch-2"></div>
+      <div class="rotor-controls">
+        <button class="rotor-btn" onclick="stepRotor(2, 1)">▲</button>
+        <button class="rotor-btn" onclick="stepRotor(2, -1)">▼</button>
+      </div>
+      <select class="rotor-select" id="rotor-select-2" onchange="setRotorType(2, this.value)">
+        <option value="I" selected>Rotor I</option>
+        <option value="II">Rotor II</option>
+        <option value="III">Rotor III</option>
+        <option value="IV">Rotor IV</option>
+        <option value="V">Rotor V</option>
+      </select>
+      <div class="ring-control">
+        RING: <input type="number" class="ring-input" id="ring-2" min="1" max="26" value="1" onchange="setRing(2, this.value)">
+      </div>
+    </div>
+
+  </div>
+  <div class="hint-text">Click rotor drum or use ▲▼ buttons to set starting position. Rotors advance automatically when typing.</div>
+
+  <div class="section-divider"></div>
+
+  <!-- LAMPBOARD -->
+  <div class="lampboard" id="lampboard">
+    <div class="lampboard-label">LAMPENFELD / LAMPBOARD</div>
+    <div class="lamp-row" id="lamp-row-1"></div>
+    <div class="lamp-row" id="lamp-row-2"></div>
+    <div class="lamp-row" id="lamp-row-3"></div>
+  </div>
+
+  <!-- KEYBOARD -->
+  <div class="keyboard" id="keyboard-section">
+    <div class="keyboard-label">TASTATUR / KEYBOARD</div>
+    <div class="key-row" id="key-row-1"></div>
+    <div class="key-row" id="key-row-2"></div>
+    <div class="key-row" id="key-row-3"></div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- PLUGBOARD -->
+  <div class="plugboard">
+    <div class="plugboard-label">STECKERBRETT / PLUGBOARD</div>
+    <div class="plugboard-inner">
+      <div class="plugboard-sockets" id="plugboard-sockets"></div>
+      <div class="plug-controls">
+        <div style="font-family:'Oswald',sans-serif;font-size:0.7rem;color:var(--brass);letter-spacing:0.1em;margin-bottom:4px;">ACTIVE STECKER PAIRS</div>
+        <div class="plug-status" id="plug-status">No connections</div>
+        <button class="action-btn danger" onclick="clearPlugboard()" style="margin-top:6px;">CLEAR ALL</button>
+        <div style="font-size:0.6rem;color:var(--steel-light);margin-top:4px;">Click two sockets to connect. Click pair to remove.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- MESSAGE TAPE -->
+  <div class="tape-section">
+    <div class="tape-box">
+      <div class="tape-box-label">PLAINTEXT EINGABE / INPUT</div>
+      <textarea class="input-area" id="plain-input" placeholder="Type message here or use keyboard above..." oninput="encryptTextarea()"></textarea>
+      <div class="tape-controls no-print">
+        <button class="action-btn" onclick="encryptTextarea()">ENCRYPT/DECRYPT</button>
+        <button class="action-btn danger" onclick="clearAll()">CLEAR</button>
+      </div>
+    </div>
+    <div class="tape-box">
+      <div class="tape-box-label">CHIFFRE AUSGABE / OUTPUT</div>
+      <div class="tape-output" id="cipher-output">—</div>
+      <div class="step-counter" id="step-counter">Steps: 0</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-bar no-print">
+    <button class="action-btn" onclick="resetRotorPositions()">RESET POSITIONS</button>
+    <button class="action-btn" onclick="loadDemoMessage()">DEMO MESSAGE</button>
+    <button class="action-btn" onclick="printMessage()">🖨 PRINT</button>
+    <button class="action-btn" onclick="saveSettings()">SAVE SETTINGS</button>
+    <button class="action-btn" onclick="loadSettings()">LOAD SETTINGS</button>
+    <button class="action-btn help-btn" onclick="showHelp()">? HELP / HISTORY</button>
+  </div>
+
+  <div class="hint-text">
+    To decode: set rotors to same start position as encoding, then type (or paste) cipher text. The Enigma is self-reciprocal.
+  </div>
+
+</div>
+
+<!-- HELP MODAL -->
+<div id="help-overlay" class="help-overlay" onclick="closeHelpOutside(event)">
+  <div class="help-modal">
+    <div class="help-header">
+      <div class="help-title-block">
+        <div class="help-eagle">✠</div>
+        <h2 class="help-title">ENIGMA — FIELD MANUAL &amp; HISTORY</h2>
+        <div class="help-subtitle">Geheime Kommandosache · For Authorised Personnel Only</div>
+      </div>
+      <button class="help-close" onclick="closeHelp()">✕ CLOSE</button>
+    </div>
+
+    <div class="help-tabs">
+      <button class="help-tab active" onclick="switchTab('history', this)">HISTORY</button>
+      <button class="help-tab" onclick="switchTab('how-it-works', this)">HOW IT WORKS</button>
+      <button class="help-tab" onclick="switchTab('operating', this)">OPERATING</button>
+      <button class="help-tab" onclick="switchTab('differences', this)">SIMULATION vs REAL</button>
+    </div>
+
+    <div class="help-content" id="tab-history">
+      <div class="help-section">
+        <h3 class="help-h3">Origins &amp; Development</h3>
+        <p>The Enigma machine was a series of electro-mechanical rotor cipher devices developed and used primarily in the early-to-mid 20th century for commercial and military communication secrecy. The earliest version was invented by German engineer <strong>Arthur Scherbius</strong> in 1918, who filed his first patent in February 1918 — just months before the end of World War I. It was originally marketed as a commercial encryption tool for businesses.</p>
+        <p>The German military — first the Reichswehr and later the Wehrmacht — began adopting Enigma in the late 1920s. By World War II, the machine had evolved through several generations and was in wide use across the Army (<em>Heer</em>), Navy (<em>Kriegsmarine</em>), Air Force (<em>Luftwaffe</em>), and intelligence services.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Physical Description</h3>
+        <p>The standard military Enigma (Enigma I, used by the Army and Air Force) was a portable wooden or metal box roughly the size of a typewriter, weighing approximately 12 kg (26 lbs) with its carrying case. It contained:</p>
+        <ul class="help-list">
+          <li>A <strong>keyboard</strong> of 26 keys arranged in the German QWERTZ layout</li>
+          <li>A <strong>lampboard</strong> above the keyboard, with 26 bulbs corresponding to each letter</li>
+          <li>A <strong>rotor assembly</strong> of 3 (later 4) rotors mounted in a horizontal slot</li>
+          <li>A <strong>reflector</strong> (Umkehrwalze / UKW) at the left end of the rotor assembly</li>
+          <li>A <strong>plugboard</strong> (Steckerbrett) on the front face, allowing cable patch connections</li>
+          <li>A <strong>battery</strong> providing the electrical current</li>
+        </ul>
+        <p>Operators would press a key, and the current would light up a lamp showing the enciphered letter. A second operator recorded each lit letter. Messages were then transmitted by radio in Morse code.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">The Battle of Wits — Breaking Enigma</h3>
+        <p>Polish mathematicians — <strong>Marian Rejewski</strong>, <strong>Jerzy Różycki</strong>, and <strong>Henryk Zygalski</strong> — were the first to crack Enigma mathematically, in 1932. They exploited procedural weaknesses in how German operators used the machine and shared their findings with British and French intelligence just before the war.</p>
+        <p>At <strong>Bletchley Park</strong>, Britain assembled a team of mathematicians, linguists, and crossword enthusiasts — including <strong>Alan Turing</strong> and <strong>Gordon Welchman</strong> — who developed the electromechanical <em>Bombe</em>, a device that could rapidly test rotor configurations to find valid settings for a given day's traffic.</p>
+        <p>The intelligence produced from broken Enigma traffic was codenamed <strong>ULTRA</strong> and is considered one of the greatest intelligence achievements in history. Churchill reportedly told King George VI that it was ULTRA that won the war. Historians estimate it shortened the war by 2–4 years and saved millions of lives.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Legacy</h3>
+        <p>After the war, Enigma's full story remained classified until the 1970s. The machines were secretly sold to developing nations who didn't know the Allies could read their communications for decades. Today, original Enigma machines are rare museum pieces and collector items, some selling at auction for over $400,000 USD.</p>
+        <p>Enigma's legacy lives on in modern cryptography — its failure taught the world that procedural discipline matters as much as mathematical strength, and that no cipher is unbreakable if its operators make mistakes.</p>
+      </div>
+    </div>
+
+    <div class="help-content hidden" id="tab-how-it-works">
+      <div class="help-section">
+        <h3 class="help-h3">The Substitution Principle</h3>
+        <p>Enigma is a <strong>polyalphabetic substitution cipher</strong> — each keypress substitutes one letter for another, but the substitution alphabet <em>changes with every single keystroke</em>. This is what makes it far stronger than a simple Caesar cipher.</p>
+        <p>When you press a key, an electrical signal travels through the machine along this path:</p>
+        <div class="signal-path">
+          <span class="sp-node">KEY</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node plug">PLUGBOARD IN</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node rotor">RIGHT ROTOR</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node rotor">MIDDLE ROTOR</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node rotor">LEFT ROTOR</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node ref">REFLECTOR</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node rotor">LEFT ROTOR</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node rotor">MIDDLE ROTOR</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node rotor">RIGHT ROTOR</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node plug">PLUGBOARD OUT</span>
+          <span class="sp-arrow">→</span>
+          <span class="sp-node lamp">LAMP</span>
+        </div>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">The Rotors</h3>
+        <p>Each rotor is a disc with 26 electrical contacts on each face, wired in a scrambled pattern. The wiring was fixed at manufacture — each historical rotor (I through V) had a unique wiring. When a rotor is in position <strong>A</strong>, contact 1 might connect to contact 5 on the other side; in position <strong>B</strong>, the disc has rotated, shifting all connections by one.</p>
+        <p>The <strong>right rotor</strong> advances one step with every keypress — like the ones column in an odometer. When the right rotor completes a full revolution (or reaches its <em>notch position</em>), it causes the <strong>middle rotor</strong> to advance. The middle rotor similarly triggers the <strong>left rotor</strong>.</p>
+        <p>The famous <strong>double-stepping anomaly</strong>: due to the mechanical design, the middle rotor steps twice in certain configurations — once when it causes the left rotor to advance, and again on the next keypress. This simulation replicates this authentic quirk.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">The Reflector (Umkehrwalze)</h3>
+        <p>The reflector is a non-rotating disc at the left end of the rotor assembly. It pairs each letter with another and sends the signal back through the rotors in reverse. The reflector serves two purposes: it creates a reciprocal cipher (if A encrypts to Z, then Z encrypts to A with the same settings), and it means a letter can <strong>never encrypt to itself</strong> — a critical weakness that Bletchley exploited.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">The Plugboard (Steckerbrett)</h3>
+        <p>Added to military Enigmas in 1930, the plugboard allowed operators to swap pairs of letters using patch cables before and after the rotor scrambling. With 10 cables connecting 20 letters into 10 pairs, the plugboard multiplied the number of possible machine configurations by a factor of approximately <strong>150 trillion</strong>. It was the single largest contributor to Enigma's overall key space.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Ring Settings (Ringstellung)</h3>
+        <p>Each rotor has an outer ring with the alphabet printed on it. The ring setting controls the offset between the outer ring's alphabet and the rotor's internal wiring. This adds another layer of complexity and was part of each day's key settings distributed to operators.</p>
+      </div>
+    </div>
+
+    <div class="help-content hidden" id="tab-operating">
+      <div class="help-section">
+        <h3 class="help-h3">Quick Start</h3>
+        <ol class="help-list ordered">
+          <li>Both sender and receiver must configure their machines <strong>identically</strong> before communicating.</li>
+          <li>Set the <strong>rotor types</strong> using the dropdown under each drum (e.g. I, II, III).</li>
+          <li>Set the <strong>ring settings</strong> (Ringstellung) using the number input below each rotor selector.</li>
+          <li>Set the <strong>starting positions</strong> using the ▲▼ buttons or by clicking the drum to step forward.</li>
+          <li>Wire up to 10 <strong>plugboard pairs</strong> by clicking any two sockets on the Steckerbrett.</li>
+          <li>Select your <strong>reflector</strong> (UKW-B is standard Wehrmacht; UKW-C was used in some contexts).</li>
+          <li>Type your message using the on-screen keyboard or your physical keyboard.</li>
+          <li>Read the encrypted output from the <strong>CHIFFRE AUSGABE</strong> panel.</li>
+        </ol>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Encrypting a Message</h3>
+        <p>Type directly using your keyboard or click the on-screen keys. Each keypress advances the rotors and lights a lamp showing the ciphertext letter. The output panel groups letters in blocks of 5 — this was standard practice to make Morse transmission easier and to obscure word boundaries.</p>
+        <p>You can also <strong>paste or type</strong> in the Plaintext Input textarea and press <strong>ENCRYPT/DECRYPT</strong> to process the full message at once. Note: non-alphabetic characters are ignored (spaces, numbers, punctuation).</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Decrypting a Message</h3>
+        <p>Enigma is <strong>self-reciprocal</strong>: to decrypt, simply configure the machine to the <em>exact same settings</em> used to encrypt, then type (or paste) the ciphertext. The output will be the original plaintext. This is Enigma's most elegant property — the same machine and same settings work in both directions.</p>
+        <p>Use <strong>RESET POSITIONS</strong> to return rotors to AAA (000) and clear the output before starting a new decryption session.</p>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Controls Reference</h3>
+        <ul class="help-list">
+          <li><strong>▲ / ▼ buttons</strong> — Step a rotor forward or backward by one position</li>
+          <li><strong>Click drum</strong> — Advance rotor forward one step</li>
+          <li><strong>Notch dot (red)</strong> — Lights when a rotor is at its turnover notch position</li>
+          <li><strong>RESET POSITIONS</strong> — Returns all rotors to AAA and clears message</li>
+          <li><strong>DEMO MESSAGE</strong> — Loads a sample message to demonstrate the machine</li>
+          <li><strong>PRINT</strong> — Opens a formatted print dialog with machine settings and message</li>
+          <li><strong>SAVE / LOAD SETTINGS</strong> — Saves/loads all machine settings to browser storage</li>
+          <li><strong>CLEAR ALL (plugboard)</strong> — Removes all plugboard connections</li>
+          <li><strong>Click pair badge</strong> — Removes that specific plug connection</li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Historical Operating Procedure</h3>
+        <p>Real German operators followed strict daily key sheets (<em>Schlüsselheft</em>) distributed in advance. Each day had a new set of rotor order, ring settings, plugboard connections, and a ground setting. The operator would first set the machine to the day's ground settings, then type an <em>indicator</em> (a chosen 3-letter starting position, repeated twice as an error check), which the receiver used to set their rotors before decoding the actual message. Many Enigma breaks at Bletchley came from operators choosing predictable indicators (like their girlfriend's initials or "AAA") or from lazy re-use of settings.</p>
+      </div>
+    </div>
+
+    <div class="help-content hidden" id="tab-differences">
+      <div class="help-section">
+        <h3 class="help-h3">What This Simulation Gets Right</h3>
+        <ul class="help-list check">
+          <li>✔ Authentic rotor wiring for all five historical rotors (I–V)</li>
+          <li>✔ Correct notch positions and turnover behavior for each rotor</li>
+          <li>✔ The <strong>double-stepping anomaly</strong> — a real mechanical quirk of the original</li>
+          <li>✔ Both historical reflectors: UKW-B (most common) and UKW-C</li>
+          <li>✔ Ring settings (Ringstellung) per rotor</li>
+          <li>✔ Plugboard (Steckerbrett) swap pairs, affecting encryption identically to the original</li>
+          <li>✔ Self-reciprocal operation — same settings encrypt and decrypt</li>
+          <li>✔ A letter <em>cannot</em> encrypt to itself (a result of the reflector design)</li>
+          <li>✔ QWERTZ keyboard layout (German standard, as on the original machine)</li>
+          <li>✔ Output grouped in 5-letter blocks as was standard practice</li>
+          <li>✔ The electrical signal path is mathematically identical to the historical machine</li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">What This Simulation Simplifies or Omits</h3>
+        <ul class="help-list cross">
+          <li>✘ <strong>Only 3 rotors</strong> — The Kriegsmarine (Navy) used a 4-rotor Enigma (M4) with an extra thin reflector and a special 4th rotor (Beta or Gamma). This simulation uses 3 rotors only.</li>
+          <li>✘ <strong>No rotor lock-in during keypress</strong> — On the real machine, the rotors advanced <em>before</em> the electrical circuit closed (pre-advance mechanism). This simulation steps first and then encrypts, which is functionally equivalent but mechanically simplified.</li>
+          <li>✘ <strong>No printer tape</strong> — Some Enigma models (particularly the Enigma T and railway variants) had a built-in letter printer that produced a paper tape. This simulation displays output on screen instead.</li>
+          <li>✘ <strong>No 4th rotor slot</strong> — The simulation does not support Navy M4 configuration with Beta/Gamma rotors.</li>
+          <li>✘ <strong>Plug cable visuals</strong> — Real plugboard cables were color-coded physical wires. This simulation shows sockets with green LED indicators and a text list of pairs, without visual cable routing.</li>
+          <li>✘ <strong>No key indicator protocol</strong> — The historical two-part message process (ground settings → indicator → message key) is not enforced. You configure settings freely.</li>
+          <li>✘ <strong>No power switch or lid</strong> — The original machine had a hinged lid over the lampboard to shade the bulbs in daylight and a physical on/off switch. Not simulated here.</li>
+          <li>✘ <strong>Unlimited plug pairs</strong> — The simulation allows up to 13 pairs (any two sockets). Historically, exactly 10 cables were used as operational practice. The simulation does not enforce this limit.</li>
+          <li>✘ <strong>No Morse code transmission layer</strong> — Real Enigma output was transmitted by radio operators as Morse code. The text output here skips that layer entirely.</li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h3 class="help-h3">Cryptographic Accuracy</h3>
+        <p>The encryption algorithm implemented here is <strong>mathematically identical</strong> to the Wehrmacht Enigma I. Messages encrypted with this simulation using the same settings will produce the same ciphertext as a real Enigma I machine or any other accurate software simulation. You can verify this against known Enigma test vectors:</p>
+        <div class="test-vector">
+          <div class="tv-row"><span class="tv-label">ROTORS:</span> <span class="tv-val">I II III (L→R), Positions: AAA, Rings: 1 1 1</span></div>
+          <div class="tv-row"><span class="tv-label">REFLECTOR:</span> <span class="tv-val">UKW-B</span></div>
+          <div class="tv-row"><span class="tv-label">PLUGBOARD:</span> <span class="tv-val">None</span></div>
+          <div class="tv-row"><span class="tv-label">INPUT:</span> <span class="tv-val">AAAAA</span></div>
+          <div class="tv-row"><span class="tv-label">EXPECTED OUTPUT:</span> <span class="tv-val">BDZGO</span></div>
+        </div>
+        <p style="margin-top:10px;">Use the DEMO MESSAGE button to verify the simulation is behaving correctly, or manually test with the vector above.</p>
+      </div>
+    </div>
+
+    <div class="help-footer">
+      <span>ENIGMA Simulation · Historical accuracy: Wehrmacht Enigma I · Rotors I–V · UKW-B/C</span>
+      <button class="action-btn" onclick="closeHelp()">CLOSE MANUAL</button>
+    </div>
+  </div>
+</div>
+
+<!-- Print Template (hidden) -->
+<div id="print-area" class="print-only" style="display:none;">
+  <h2>ENIGMA CIPHER TRANSCRIPT</h2>
+  <p id="print-settings"></p>
+  <p><strong>PLAINTEXT:</strong></p>
+  <p id="print-plain"></p>
+  <p><strong>CIPHERTEXT:</strong></p>
+  <p id="print-cipher"></p>
+</div>
+
+<script>
+// ===== ENIGMA WIRING DATA =====
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+const ROTOR_WIRINGS = {
+  'I':   { wiring: 'EKMFLGDQVZNTOWYHXUSPAIBRCJ', notch: 'Q' },
+  'II':  { wiring: 'AJDKSIRUXBLHWTMCQGZNPYFVOE', notch: 'E' },
+  'III': { wiring: 'BDFHJLCPRTXVZNYEIWGAKMUSQO', notch: 'V' },
+  'IV':  { wiring: 'ESOVPZJAYQUIRHXLNFTGKDCMWB', notch: 'J' },
+  'V':   { wiring: 'VZBRGITYUPSDNHLXAWMJQOFECK', notch: 'Z' },
+};
+
+const REFLECTORS = {
+  'B': 'YRUHQSLDPXNGOKMIEBFZCWVJAT',
+  'C': 'FVPJIAOYEDRZXWGCTKUQSBNMHL',
+};
+
+// ===== STATE =====
+let rotorTypes = ['III', 'II', 'I'];       // L, M, R
+let rotorPositions = [0, 0, 0];            // A=0
+let ringSettings = [0, 0, 0];             // 1-indexed = 0-based offset
+let selectedReflector = 'B';
+let plugboardPairs = {};                   // e.g. {A:'Z', Z:'A'}
+let plugSelected = null;
+let stepCount = 0;
+let lampTimeout = null;
+
+const KEYBOARD_ROWS = [
+  ['Q','W','E','R','T','Z','U','I','O'],
+  ['A','S','D','F','G','H','J','K'],
+  ['P','Y','X','C','V','B','N','M','L'],
+];
+
+// ===== INIT =====
+function init() {
+  buildLampboard();
+  buildKeyboard();
+  buildPlugboard();
+  updateAllRotorDisplays();
+}
+
+// ===== LAMPBOARD =====
+function buildLampboard() {
+  const rows = [['Q','W','E','R','T','Z','U','I','O'],['A','S','D','F','G','H','J','K'],['P','Y','X','C','V','B','N','M','L']];
+  rows.forEach((row, ri) => {
+    const el = document.getElementById(`lamp-row-${ri+1}`);
+    el.innerHTML = '';
+    row.forEach(letter => {
+      const lamp = document.createElement('div');
+      lamp.className = 'lamp';
+      lamp.id = `lamp-${letter}`;
+      lamp.textContent = letter;
+      el.appendChild(lamp);
+    });
+  });
+}
+
+function lightLamp(letter) {
+  if (lampTimeout) clearTimeout(lampTimeout);
+  document.querySelectorAll('.lamp.lit').forEach(l => l.classList.remove('lit'));
+  const lamp = document.getElementById(`lamp-${letter}`);
+  if (lamp) {
+    lamp.classList.add('lit');
+    lampTimeout = setTimeout(() => lamp.classList.remove('lit'), 300);
+  }
+}
+
+// ===== KEYBOARD =====
+function buildKeyboard() {
+  KEYBOARD_ROWS.forEach((row, ri) => {
+    const el = document.getElementById(`key-row-${ri+1}`);
+    el.innerHTML = '';
+    row.forEach(letter => {
+      const key = document.createElement('div');
+      key.className = 'key';
+      key.id = `key-${letter}`;
+      key.textContent = letter;
+      key.addEventListener('mousedown', () => pressKey(letter));
+      el.appendChild(key);
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const letter = e.key.toUpperCase();
+    if (ALPHABET.includes(letter)) {
+      e.preventDefault();
+      pressKey(letter);
+      const keyEl = document.getElementById(`key-${letter}`);
+      if (keyEl) keyEl.classList.add('pressed');
+    }
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      backspaceInput();
+    }
+  });
+  document.addEventListener('keyup', (e) => {
+    const letter = e.key.toUpperCase();
+    if (ALPHABET.includes(letter)) {
+      const keyEl = document.getElementById(`key-${letter}`);
+      if (keyEl) keyEl.classList.remove('pressed');
+    }
+  });
+}
+
+// ===== ROTOR DISPLAY =====
+function buildRotorTape(index) {
+  const tape = document.getElementById(`tape-${index}`);
+  tape.innerHTML = '';
+  const pos = rotorPositions[index];
+  // Show 4 letters above and below the center window (9 total)
+  for (let i = -4; i <= 4; i++) {
+    const letterIndex = ((pos + i) % 26 + 26) % 26;
+    const div = document.createElement('div');
+    div.className = 'rotor-letter' + (i === 0 ? ' active' : '');
+    div.textContent = ALPHABET[letterIndex];
+    tape.appendChild(div);
+  }
+  // Position tape so center is visible (each letter = 28px, center at index 4)
+  const offset = -4 * 28 + (120/2 - 14); // center the middle letter
+  tape.style.top = `${offset}px`;
+}
+
+function updateAllRotorDisplays() {
+  for (let i = 0; i < 3; i++) {
+    buildRotorTape(i);
+    updateNotchIndicator(i);
+  }
+}
+
+function updateNotchIndicator(index) {
+  const rotor = ROTOR_WIRINGS[rotorTypes[index]];
+  const notchPos = ALPHABET.indexOf(rotor.notch);
+  const dot = document.getElementById(`notch-${index}`);
+  if (rotorPositions[index] === notchPos) {
+    dot.classList.remove('inactive');
+  } else {
+    dot.classList.add('inactive');
+  }
+}
+
+function stepRotor(index, direction) {
+  rotorPositions[index] = ((rotorPositions[index] + direction) % 26 + 26) % 26;
+  buildRotorTape(index);
+  updateNotchIndicator(index);
+  // Flash
+  const drum = document.getElementById(`drum-${index}`);
+  drum.classList.add('spinning');
+  setTimeout(() => drum.classList.remove('spinning'), 150);
+}
+
+function advanceRotor(index) {
+  stepRotor(index, 1);
+}
+
+function setRotorType(index, type) {
+  rotorTypes[index] = type;
+  buildRotorTape(index);
+  updateNotchIndicator(index);
+}
+
+function setRing(index, val) {
+  ringSettings[index] = (parseInt(val) - 1 + 26) % 26;
+}
+
+function setReflector(val) {
+  selectedReflector = val;
+  document.getElementById('reflector-drum').textContent = val;
+}
+
+function resetRotorPositions() {
+  rotorPositions = [0, 0, 0];
+  stepCount = 0;
+  updateAllRotorDisplays();
+  document.getElementById('step-counter').textContent = 'Steps: 0';
+  document.getElementById('cipher-output').textContent = '—';
+  document.getElementById('plain-input').value = '';
+}
+
+// ===== ENIGMA CIPHER ENGINE =====
+function mod26(n) { return ((n % 26) + 26) % 26; }
+
+function rotorForward(wiringStr, input) {
+  return ALPHABET.indexOf(wiringStr[input]);
+}
+
+function rotorBackward(wiringStr, input) {
+  return wiringStr.indexOf(ALPHABET[input]);
+}
+
+function enigmaStep() {
+  // Double-stepping anomaly
+  const notch0 = ALPHABET.indexOf(ROTOR_WIRINGS[rotorTypes[0]].notch);
+  const notch1 = ALPHABET.indexOf(ROTOR_WIRINGS[rotorTypes[1]].notch);
+  const notch2 = ALPHABET.indexOf(ROTOR_WIRINGS[rotorTypes[2]].notch);
+
+  const atNotch1 = rotorPositions[1] === notch1;
+  const atNotch2 = rotorPositions[2] === notch2;
+
+  // Right rotor always steps
+  rotorPositions[2] = mod26(rotorPositions[2] + 1);
+
+  // Middle rotor steps if right was at notch, or double-step
+  if (atNotch2 || atNotch1) {
+    rotorPositions[1] = mod26(rotorPositions[1] + 1);
+  }
+
+  // Left rotor steps if middle was at notch
+  if (atNotch1) {
+    rotorPositions[0] = mod26(rotorPositions[0] + 1);
+  }
+
+  updateAllRotorDisplays();
+
+  // Flash drums
+  [0,1,2].forEach(i => {
+    const drum = document.getElementById(`drum-${i}`);
+    drum.classList.add('spinning');
+    setTimeout(() => drum.classList.remove('spinning'), 120);
+  });
+}
+
+function enigmaEncrypt(charIndex) {
+  // Plugboard in
+  let c = charIndex;
+  const charLetter = ALPHABET[c];
+  if (plugboardPairs[charLetter]) {
+    c = ALPHABET.indexOf(plugboardPairs[charLetter]);
+  }
+
+  // Through rotors right to left (index 2 = right, 0 = left)
+  for (let i = 2; i >= 0; i--) {
+    const offset = rotorPositions[i];
+    const ring = ringSettings[i];
+    const wiring = ROTOR_WIRINGS[rotorTypes[i]].wiring;
+    c = rotorForward(wiring, mod26(c + offset - ring));
+    c = mod26(c - offset + ring);
+  }
+
+  // Through reflector
+  c = ALPHABET.indexOf(REFLECTORS[selectedReflector][c]);
+
+  // Back through rotors left to right
+  for (let i = 0; i < 3; i++) {
+    const offset = rotorPositions[i];
+    const ring = ringSettings[i];
+    const wiring = ROTOR_WIRINGS[rotorTypes[i]].wiring;
+    c = rotorBackward(wiring, mod26(c + offset - ring));
+    c = mod26(c - offset + ring);
+  }
+
+  // Plugboard out
+  const outLetter = ALPHABET[c];
+  if (plugboardPairs[outLetter]) {
+    c = ALPHABET.indexOf(plugboardPairs[outLetter]);
+  }
+
+  return c;
+}
+
+// ===== KEY PRESS =====
+function pressKey(letter) {
+  if (!ALPHABET.includes(letter)) return;
+
+  enigmaStep();
+  stepCount++;
+
+  const input = ALPHABET.indexOf(letter);
+  const output = enigmaEncrypt(input);
+  const outLetter = ALPHABET[output];
+
+  lightLamp(outLetter);
+
+  // Append to input and output
+  const inputEl = document.getElementById('plain-input');
+  inputEl.value += letter;
+
+  appendOutput(outLetter);
+  document.getElementById('step-counter').textContent = `Steps: ${stepCount}`;
+}
+
+function backspaceInput() {
+  const inputEl = document.getElementById('plain-input');
+  if (inputEl.value.length > 0) {
+    inputEl.value = inputEl.value.slice(0, -1);
+    // Recompute entire cipher
+    recomputeFromScratch();
+  }
+}
+
+function appendOutput(letter) {
+  const outputEl = document.getElementById('cipher-output');
+  // Build output with groups of 5
+  const current = outputEl.dataset.raw || '';
+  const newRaw = current + letter;
+  outputEl.dataset.raw = newRaw;
+  renderGrouped(outputEl, newRaw);
+}
+
+function renderGrouped(el, text) {
+  let html = '';
+  for (let i = 0; i < text.length; i += 5) {
+    html += `<span class="group">${text.slice(i, i+5)}</span>`;
+  }
+  el.innerHTML = html || '—';
+}
+
+// ===== TEXTAREA ENCRYPT =====
+function encryptTextarea() {
+  recomputeFromScratch();
+}
+
+function recomputeFromScratch() {
+  // Reset rotor to initial saved positions — not ideal, so instead we
+  // save start positions and re-encrypt from scratch.
+  // For UX: always re-encrypt from current saved start positions.
+  const savedPositions = [...startPositions];
+  rotorPositions = [...savedPositions];
+  updateAllRotorDisplays();
+
+  const inputEl = document.getElementById('plain-input');
+  const text = inputEl.value.toUpperCase().replace(/[^A-Z]/g, '');
+  const outputEl = document.getElementById('cipher-output');
+  outputEl.dataset.raw = '';
+
+  let result = '';
+  stepCount = 0;
+
+  for (const char of text) {
+    enigmaStep();
+    stepCount++;
+    const idx = ALPHABET.indexOf(char);
+    const out = enigmaEncrypt(idx);
+    result += ALPHABET[out];
+  }
+
+  outputEl.dataset.raw = result;
+  renderGrouped(outputEl, result);
+  document.getElementById('step-counter').textContent = `Steps: ${stepCount}`;
+}
+
+// Track start positions for textarea re-encryption
+let startPositions = [0, 0, 0];
+
+function saveStartPositions() {
+  startPositions = [...rotorPositions];
+}
+
+// Override stepRotor to save start when manually set
+const _origBuildTape = buildRotorTape;
+
+// ===== PLUGBOARD =====
+function buildPlugboard() {
+  const container = document.getElementById('plugboard-sockets');
+  container.innerHTML = '';
+  for (const letter of ALPHABET) {
+    const wrap = document.createElement('div');
+    wrap.className = 'plug-socket';
+    const label = document.createElement('div');
+    label.className = 'socket-label';
+    label.textContent = letter;
+    const socket = document.createElement('div');
+    socket.className = 'socket';
+    socket.id = `socket-${letter}`;
+    socket.onclick = () => clickSocket(letter);
+    wrap.appendChild(label);
+    wrap.appendChild(socket);
+    container.appendChild(wrap);
+  }
+  updatePlugDisplay();
+}
+
+function clickSocket(letter) {
+  if (plugboardPairs[letter]) {
+    // Already connected — remove
+    removePlug(letter);
+    return;
+  }
+
+  if (!plugSelected) {
+    plugSelected = letter;
+    document.getElementById(`socket-${letter}`).classList.add('selected');
+  } else if (plugSelected === letter) {
+    // Deselect
+    document.getElementById(`socket-${letter}`).classList.remove('selected');
+    plugSelected = null;
+  } else {
+    // Connect
+    const a = plugSelected;
+    const b = letter;
+    plugboardPairs[a] = b;
+    plugboardPairs[b] = a;
+    document.getElementById(`socket-${a}`).classList.remove('selected');
+    document.getElementById(`socket-${a}`).classList.add('plugged');
+    document.getElementById(`socket-${b}`).classList.add('plugged');
+    plugSelected = null;
+    updatePlugDisplay();
+  }
+}
+
+function removePlug(letter) {
+  const paired = plugboardPairs[letter];
+  if (paired) {
+    delete plugboardPairs[letter];
+    delete plugboardPairs[paired];
+    document.getElementById(`socket-${letter}`).classList.remove('plugged');
+    document.getElementById(`socket-${paired}`).classList.remove('plugged');
+    updatePlugDisplay();
+  }
+}
+
+function clearPlugboard() {
+  plugboardPairs = {};
+  plugSelected = null;
+  document.querySelectorAll('.socket').forEach(s => {
+    s.classList.remove('plugged', 'selected');
+  });
+  updatePlugDisplay();
+}
+
+function updatePlugDisplay() {
+  const statusEl = document.getElementById('plug-status');
+  const pairs = [];
+  const seen = new Set();
+  for (const [a, b] of Object.entries(plugboardPairs)) {
+    const key = [a, b].sort().join('');
+    if (!seen.has(key)) {
+      seen.add(key);
+      pairs.push([a, b]);
+    }
+  }
+  if (pairs.length === 0) {
+    statusEl.innerHTML = '<span style="color:var(--steel-light)">No connections</span>';
+  } else {
+    statusEl.innerHTML = pairs.map(([a, b]) =>
+      `<span class="plug-pair" onclick="removePlug('${a}')">
+        <span style="color:var(--amber)">${a}</span>
+        <span style="color:var(--steel-light)">⇄</span>
+        <span style="color:var(--amber)">${b}</span>
+        <span class="remove-plug">✕</span>
+      </span>`
+    ).join('');
+  }
+}
+
+// ===== UTILITIES =====
+function clearAll() {
+  document.getElementById('plain-input').value = '';
+  const outputEl = document.getElementById('cipher-output');
+  outputEl.textContent = '—';
+  outputEl.dataset.raw = '';
+  stepCount = 0;
+  document.getElementById('step-counter').textContent = 'Steps: 0';
+  document.querySelectorAll('.lamp.lit').forEach(l => l.classList.remove('lit'));
+}
+
+function loadDemoMessage() {
+  resetRotorPositions();
+  // Set classic demo
+  rotorPositions = [0, 0, 0];
+  startPositions = [0, 0, 0];
+  updateAllRotorDisplays();
+  document.getElementById('plain-input').value = 'ENIGMAMACHINE';
+  encryptTextarea();
+}
+
+function printMessage() {
+  const plain = document.getElementById('plain-input').value || '—';
+  const cipher = (document.getElementById('cipher-output').dataset.raw || '').replace(/(.{5})/g, '$1 ').trim() || '—';
+
+  const settings = `Rotors: ${rotorTypes.join('-')} | Positions: ${rotorPositions.map(p=>ALPHABET[p]).join('')} | Reflector: UKW-${selectedReflector}`;
+  const plugPairs = Object.entries(plugboardPairs).filter(([a,b])=>a<b).map(([a,b])=>a+b).join(' ') || 'None';
+
+  const printWin = window.open('', '_blank', 'width=700,height=500');
+  printWin.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>ENIGMA — Cipher Transcript</title>
+      <style>
+        body { font-family: 'Courier New', monospace; padding: 40px; background: white; color: black; }
+        h1 { font-size: 1.6rem; letter-spacing: 0.4em; border-bottom: 2px solid black; padding-bottom: 8px; margin-bottom: 16px; }
+        .meta { font-size: 0.75rem; color: #555; margin-bottom: 20px; }
+        .section { margin-bottom: 16px; }
+        .section h3 { font-size: 0.8rem; letter-spacing: 0.2em; color: #888; margin-bottom: 4px; }
+        .section p { font-size: 1rem; letter-spacing: 0.12em; line-height: 1.8; word-break: break-all; }
+        .classification { border: 1px solid red; color: red; display: inline-block; padding: 3px 12px; font-size: 0.7rem; letter-spacing: 0.2em; margin-bottom: 20px; }
+        @media print { body { padding: 20px; } }
+      </style>
+    </head>
+    <body>
+      <h1>ENIGMA CIPHER TRANSCRIPT</h1>
+      <div class="classification">GEHEIME KOMMANDOSACHE</div>
+      <div class="meta">${new Date().toLocaleString()}</div>
+      <div class="section"><h3>MACHINE SETTINGS</h3><p>${settings}</p></div>
+      <div class="section"><h3>PLUGBOARD (STECKERBRETT)</h3><p>${plugPairs}</p></div>
+      <div class="section"><h3>PLAINTEXT</h3><p>${plain}</p></div>
+      <div class="section"><h3>CIPHERTEXT</h3><p>${cipher}</p></div>
+      <script>window.onload=function(){window.print();}<\/script>
+    </body>
+    </html>
+  `);
+  printWin.document.close();
+}
+
+function saveSettings() {
+  const settings = {
+    rotorTypes, rotorPositions, ringSettings, selectedReflector, plugboardPairs
+  };
+  localStorage.setItem('enigma_settings', JSON.stringify(settings));
+  alert('Settings saved!');
+}
+
+function loadSettings() {
+  const saved = localStorage.getItem('enigma_settings');
+  if (!saved) { alert('No saved settings found.'); return; }
+  const s = JSON.parse(saved);
+  rotorTypes = s.rotorTypes;
+  rotorPositions = s.rotorPositions;
+  ringSettings = s.ringSettings;
+  selectedReflector = s.selectedReflector;
+  plugboardPairs = s.plugboardPairs;
+  startPositions = [...rotorPositions];
+
+  // Update selects
+  [0,1,2].forEach(i => {
+    document.getElementById(`rotor-select-${i}`).value = rotorTypes[i];
+    document.getElementById(`ring-${i}`).value = ringSettings[i] + 1;
+  });
+  document.getElementById('reflector-select').value = selectedReflector;
+  document.getElementById('reflector-drum').textContent = selectedReflector;
+
+  buildPlugboard();
+  Object.entries(plugboardPairs).forEach(([a, b]) => {
+    if (a < b) {
+      document.getElementById(`socket-${a}`).classList.add('plugged');
+      document.getElementById(`socket-${b}`).classList.add('plugged');
+    }
+  });
+  updateAllRotorDisplays();
+  updatePlugDisplay();
+  alert('Settings loaded!');
+}
+
+// Track start positions whenever rotors are manually adjusted
+const origStepRotor = stepRotor;
+// We capture start positions on page load
+window.addEventListener('load', () => {
+  startPositions = [...rotorPositions];
+});
+
+// Listen for manual rotor changes
+document.addEventListener('DOMContentLoaded', () => {});
+
+// When textarea is focused/modified, re-save start positions each time
+// Actually: save start positions ONLY when user manually presses rotor buttons (not during typing)
+// We do this by tracking a flag.
+let isTyping = false;
+
+const origPressKey = pressKey;
+
+// Override button actions to save start positions before re-encrypting
+function stepRotor(index, direction) {
+  rotorPositions[index] = ((rotorPositions[index] + direction) % 26 + 26) % 26;
+  startPositions[index] = rotorPositions[index];
+  buildRotorTape(index);
+  updateNotchIndicator(index);
+  const drum = document.getElementById(`drum-${index}`);
+  drum.classList.add('spinning');
+  setTimeout(() => drum.classList.remove('spinning'), 150);
+}
+
+// ===== HELP MODAL =====
+function showHelp() {
+  document.getElementById('help-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeHelp() {
+  document.getElementById('help-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function closeHelpOutside(event) {
+  if (event.target === document.getElementById('help-overlay')) {
+    closeHelp();
+  }
+}
+
+function switchTab(tabName, btn) {
+  // Hide all tabs
+  document.querySelectorAll('.help-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.help-tab').forEach(el => el.classList.remove('active'));
+  // Show selected
+  document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+  btn.classList.add('active');
+}
+
+// Escape key closes help
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeHelp();
+});
+
+// ===== VERSION TAG =====
+async function updateCommitHash() {
+    const repo = "jellybean1979/Enigma_machine";
+    const branch = "main";
+
+    try {
+        const response = await fetch(`https://api.github.com/repos/${repo}/commits/${branch}`);
+        const data = await response.json();
+        const hash = data.sha.substring(0, 7);
+
+        document.getElementById("versionTag").textContent =
+            `by Gary Langley — build ${hash}`;
+    } catch (err) {
+        document.getElementById("versionTag").textContent =
+            "by Gary Langley — build unknown";
+    }
+}
+
+init();
+startPositions = [...rotorPositions];
+updateCommitHash();
+
+</script>
+</body>
+</html>
+
