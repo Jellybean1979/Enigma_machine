@@ -741,6 +741,13 @@
     letter-spacing: 0.05em;
   }
 
+  .print-cipher-btn {
+    background: linear-gradient(180deg, #2a1a0a 0%, #1a0e04 100%);
+    border-color: var(--brass-dark);
+    color: var(--amber);
+  }
+  .print-cipher-btn:hover { filter: brightness(1.2); }
+
   /* CODEBOOK BUTTON */
   .codebook-btn {
     background: linear-gradient(180deg, #1a2a4a 0%, #0d1828 100%);
@@ -1379,7 +1386,8 @@
   <div class="controls-bar no-print">
     <button class="action-btn" onclick="resetRotorPositions()">RESET POSITIONS</button>
     <button class="action-btn" onclick="loadDemoMessage()">DEMO MESSAGE</button>
-    <button class="action-btn" onclick="printMessage()">🖨 PRINT</button>
+    <button class="action-btn" onclick="printMessage('full')">🖨 PRINT</button>
+    <button class="action-btn print-cipher-btn" onclick="printMessage('cipher')">🖨 CIPHER ONLY</button>
     <button class="action-btn codebook-btn" onclick="showCodebook()">📋 SCHLÜSSELHEFT</button>
     <button class="action-btn help-btn" onclick="showHelp()">? HELP / HISTORY</button>
   </div>
@@ -2195,19 +2203,26 @@ function loadDemoMessage() {
   encryptTextarea();
 }
 
-function printMessage() {
+function printMessage(mode = 'full') {
   const plain = document.getElementById('plain-input').value || '—';
   const cipher = (document.getElementById('cipher-output').dataset.raw || '').replace(/(.{5})/g, '$1 ').trim() || '—';
-
   const settings = `Rotors: ${rotorTypes.join('-')} | Positions: ${rotorPositions.map(p=>ALPHABET[p]).join('')} | Reflector: UKW-${selectedReflector}`;
   const plugPairs = Object.entries(plugboardPairs).filter(([a,b])=>a<b).map(([a,b])=>a+b).join(' ') || 'None';
+
+  const isCipherOnly = mode === 'cipher';
+  const title = isCipherOnly ? 'ENIGMA — CIPHERTEXT TRANSMISSION' : 'ENIGMA — CIPHER TRANSCRIPT';
+
+  const settingsBlock = isCipherOnly ? '' : `
+    <div class="section"><h3>MACHINE SETTINGS</h3><p>${settings}</p></div>
+    <div class="section"><h3>PLUGBOARD (STECKERBRETT)</h3><p>${plugPairs}</p></div>
+    <div class="section"><h3>PLAINTEXT</h3><p>${plain}</p></div>`;
 
   const printWin = window.open('', '_blank', 'width=700,height=500');
   printWin.document.write(`
     <!DOCTYPE html>
     <html>
     <head>
-      <title>ENIGMA — Cipher Transcript</title>
+      <title>${title}</title>
       <style>
         body { font-family: 'Courier New', monospace; padding: 40px; background: white; color: black; }
         h1 { font-size: 1.6rem; letter-spacing: 0.4em; border-bottom: 2px solid black; padding-bottom: 8px; margin-bottom: 16px; }
@@ -2215,18 +2230,21 @@ function printMessage() {
         .section { margin-bottom: 16px; }
         .section h3 { font-size: 0.8rem; letter-spacing: 0.2em; color: #888; margin-bottom: 4px; }
         .section p { font-size: 1rem; letter-spacing: 0.12em; line-height: 1.8; word-break: break-all; }
+        .cipher-block { font-size: 1.3rem; letter-spacing: 0.2em; line-height: 2.2; word-break: break-all; margin-top: 8px; }
         .classification { border: 1px solid red; color: red; display: inline-block; padding: 3px 12px; font-size: 0.7rem; letter-spacing: 0.2em; margin-bottom: 20px; }
+        .cipher-label { font-size: 0.8rem; letter-spacing: 0.2em; color: #888; margin-bottom: 6px; }
         @media print { body { padding: 20px; } }
       </style>
     </head>
     <body>
-      <h1>ENIGMA CIPHER TRANSCRIPT</h1>
+      <h1>${title}</h1>
       <div class="classification">GEHEIME KOMMANDOSACHE</div>
       <div class="meta">${new Date().toLocaleString()}</div>
-      <div class="section"><h3>MACHINE SETTINGS</h3><p>${settings}</p></div>
-      <div class="section"><h3>PLUGBOARD (STECKERBRETT)</h3><p>${plugPairs}</p></div>
-      <div class="section"><h3>PLAINTEXT</h3><p>${plain}</p></div>
-      <div class="section"><h3>CIPHERTEXT</h3><p>${cipher}</p></div>
+      ${settingsBlock}
+      <div class="section">
+        <h3>${isCipherOnly ? 'CIPHERTEXT' : 'CIPHERTEXT'}</h3>
+        <p class="${isCipherOnly ? 'cipher-block' : ''}">${cipher}</p>
+      </div>
       <script>window.onload=function(){window.print();}<\/script>
     </body>
     </html>
