@@ -1619,7 +1619,7 @@
         <option value="V">Rotor V</option>
       </select>
       <div class="ring-control">
-        RING: <input type="number" class="ring-input" id="ring-0" min="1" max="26" value="1" onchange="setRing(0, this.value)">
+        RING: <input type="number" class="ring-input" id="ring-0" min="1" max="26" value="1" onfocus="this.select()" oninput="setRing(0, this.value)" onchange="setRing(0, this.value)">
       </div>
     </div>
 
@@ -1642,7 +1642,7 @@
         <option value="V">Rotor V</option>
       </select>
       <div class="ring-control">
-        RING: <input type="number" class="ring-input" id="ring-1" min="1" max="26" value="1" onchange="setRing(1, this.value)">
+        RING: <input type="number" class="ring-input" id="ring-1" min="1" max="26" value="1" onfocus="this.select()" oninput="setRing(1, this.value)" onchange="setRing(1, this.value)">
       </div>
     </div>
 
@@ -1665,7 +1665,7 @@
         <option value="V">Rotor V</option>
       </select>
       <div class="ring-control">
-        RING: <input type="number" class="ring-input" id="ring-2" min="1" max="26" value="1" onchange="setRing(2, this.value)">
+        RING: <input type="number" class="ring-input" id="ring-2" min="1" max="26" value="1" onfocus="this.select()" oninput="setRing(2, this.value)" onchange="setRing(2, this.value)">
       </div>
     </div>
 
@@ -1951,9 +1951,9 @@
             <div class="cb-field">
               <label class="cb-label" data-i18n="cbRingSettings">RING SETTINGS</label>
               <div class="cb-rotor-row">
-                <input type="number" class="cb-input cb-pos" id="cb-ring-0" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
-                <input type="number" class="cb-input cb-pos" id="cb-ring-1" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
-                <input type="number" class="cb-input cb-pos" id="cb-ring-2" min="1" max="26" value="1" onfocus="this.select()" oninput="this.value=Math.min(26,Math.max(1,parseInt(this.value)||1))">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-0" min="1" max="26" value="1" onfocus="this.select()" oninput="if(this.value&&parseInt(this.value)>=1)this.value=Math.min(26,parseInt(this.value))">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-1" min="1" max="26" value="1" onfocus="this.select()" oninput="if(this.value&&parseInt(this.value)>=1)this.value=Math.min(26,parseInt(this.value))">
+                <input type="number" class="cb-input cb-pos" id="cb-ring-2" min="1" max="26" value="1" onfocus="this.select()" oninput="if(this.value&&parseInt(this.value)>=1)this.value=Math.min(26,parseInt(this.value))">
               </div>
             </div>
           </div>
@@ -2417,7 +2417,10 @@ function setRotorType(index, type) {
 }
 
 function setRing(index, val) {
-  ringSettings[index] = (parseInt(val) - 1 + 26) % 26;
+  const n = parseInt(val);
+  if (!isNaN(n) && n >= 1 && n <= 26) {
+    ringSettings[index] = n - 1;
+  }
 }
 
 function setReflector(val) {
