@@ -159,6 +159,7 @@
       inset 0 0 60px rgba(0,0,0,0.4);
     position: relative;
     overflow: visible;
+    isolation: isolate;
   }
 
   .machine-body::before {
@@ -168,6 +169,7 @@
     background-image:
       repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.005) 10px, rgba(255,255,255,0.005) 20px);
     pointer-events: none;
+    z-index: -1;
   }
 
   /* ROTOR SECTION */
@@ -176,21 +178,24 @@
     gap: 12px;
     justify-content: center;
     margin-bottom: 20px;
-    margin-top: 14px;
+    margin-top: 10px;
     padding: 16px;
-    padding-top: 20px;
+    padding-top: 28px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
     position: relative;
+        overflow: visible;
+      isolation: isolate;
   }
 
   .rotor-section-label {
-    position: absolute;
-    top: -11px;
-    left: 16px;
+      position: absolute;
+    top: 0;
+    left: 12px;
+    transform: translateY(-50%);
     background: var(--bakelite);
-    padding: 2px 8px;
+    padding: 2px 10px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
@@ -198,7 +203,7 @@
     border: 1px solid var(--brass-dark);
     border-radius: 2px;
     white-space: nowrap;
-    z-index: 1;
+    z-index: 3;
   }
 
   .rotor-assembly {
@@ -357,21 +362,24 @@
     align-items: center;
     gap: 6px;
     margin-bottom: 16px;
-    margin-top: 14px;
+    margin-top: 10px;
     padding: 16px;
-    padding-top: 20px;
+    padding-top: 28px;
     background: rgba(0,0,0,0.4);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
     position: relative;
+        overflow: visible;
+      isolation: isolate;
   }
 
   .lampboard-label {
-    position: absolute;
-    top: -11px;
-    left: 16px;
+      position: absolute;
+    top: 0;
+    left: 12px;
+    transform: translateY(-50%);
     background: var(--bakelite);
-    padding: 2px 8px;
+    padding: 2px 10px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
@@ -379,7 +387,7 @@
     border: 1px solid var(--brass-dark);
     border-radius: 2px;
     white-space: nowrap;
-    z-index: 1;
+    z-index: 3;
   }
 
   .lamp-row {
@@ -425,21 +433,24 @@
     align-items: center;
     gap: 6px;
     margin-bottom: 16px;
-    margin-top: 14px;
+    margin-top: 10px;
     padding: 16px;
-    padding-top: 20px;
+    padding-top: 28px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
     position: relative;
+        overflow: visible;
+      isolation: isolate;
   }
 
   .keyboard-label {
-    position: absolute;
-    top: -11px;
-    left: 16px;
+      position: absolute;
+    top: 0;
+    left: 12px;
+    transform: translateY(-50%);
     background: var(--bakelite);
-    padding: 2px 8px;
+    padding: 2px 10px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
@@ -447,7 +458,7 @@
     border: 1px solid var(--brass-dark);
     border-radius: 2px;
     white-space: nowrap;
-    z-index: 1;
+    z-index: 3;
   }
 
   .key-row {
@@ -490,21 +501,24 @@
   /* PLUGBOARD */
   .plugboard {
     padding: 16px;
-    padding-top: 22px;
-    margin-top: 14px;
+    padding-top: 28px;
+    margin-top: 10px;
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
     margin-bottom: 16px;
     position: relative;
+        overflow: visible;
+      isolation: isolate;
   }
 
   .plugboard-label {
-    position: absolute;
-    top: -11px;
-    left: 16px;
+      position: absolute;
+    top: 0;
+    left: 12px;
+    transform: translateY(-50%);
     background: var(--bakelite);
-    padding: 2px 8px;
+    padding: 2px 10px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
@@ -512,7 +526,7 @@
     border: 1px solid var(--brass-dark);
     border-radius: 2px;
     white-space: nowrap;
-    z-index: 1;
+    z-index: 3;
   }
 
   .plugboard-inner {
@@ -634,6 +648,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 16px;
+    margin-top: 20px;
   }
 
   .tape-box {
@@ -641,18 +656,21 @@
     border: 1px solid var(--brass-dark);
     border-radius: 6px;
     padding: 14px;
-    padding-top: 20px;
-    margin-top: 14px;
+    padding-top: 28px;
     position: relative;
     min-width: 0;
+    isolation: isolate;
+      overflow: visible;
+      margin-top: 10px;
   }
 
   .tape-box-label {
-    position: absolute;
-    top: -11px;
+      position: absolute;
+    top: 0;
     left: 12px;
+    transform: translateY(-50%);
     background: var(--bakelite);
-    padding: 2px 8px;
+    padding: 2px 10px;
     font-size: 0.65rem;
     color: var(--brass);
     letter-spacing: 0.2em;
@@ -660,7 +678,7 @@
     border: 1px solid var(--brass-dark);
     border-radius: 2px;
     white-space: nowrap;
-    z-index: 1;
+    z-index: 3;
   }
 
   .tape-output {
@@ -740,17 +758,41 @@
 
     /* Rotors: horizontal scroll on small screens */
     .rotor-section {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 10px;
-      justify-content: flex-start;
-    }
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    padding: 16px;
+    padding-top: 28px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    position: relative;
+        overflow: visible;
+      isolation: isolate;
+  }
     .rotor-assembly { min-width: 80px; }
     .rotor-drum { width: 70px; }
     .rotor-select { width: 70px; }
 
     /* Lampboard & keyboard: scroll if needed */
-    .lampboard, .keyboard { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .lampboard, .keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    margin-top: 10px;
+    padding: 16px;
+    padding-top: 28px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    position: relative;
+        overflow: visible;
+      isolation: isolate;
+  }
     .lamp-row, .key-row { flex-wrap: nowrap; }
     .lamp { width: 30px; height: 30px; font-size: 0.65rem; }
     .key  { width: 32px; height: 32px; font-size: 0.75rem; }
@@ -780,14 +822,19 @@
     /* Help/codebook modals full screen */
     .help-modal, .codebook-modal, .export-modal {
       max-width: 100% !important;
-      max-height: 95vh;
       border-radius: 4px;
+      margin: 0;
     }
     .help-header { flex-wrap: wrap; gap: 8px; }
     .help-title { font-size: 0.85rem; }
+
+    /* Codebook: stack list above editor */
     .cb-body { flex-direction: column; }
-    .cb-list-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--brass-dark); max-height: 340px; }
-    .cb-entry-list { max-height: 220px; }
+    .cb-list-panel {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--brass-dark);
+    }
 
     /* Rotor label font */
     .rotor-label { font-size: 0.55rem; }
@@ -820,7 +867,18 @@
     .tape-output { color: black !important; background: #f9f9f9 !important; border: 1px solid #ccc !important; }
     .lampboard, .keyboard, .rotor-section, .controls-bar { display: none !important; }
     .tape-section { grid-template-columns: 1fr !important; }
-    .plugboard { border: 1px solid #888 !important; }
+    .plugboard {
+    padding: 16px;
+    padding-top: 28px;
+    margin-top: 10px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--brass-dark);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    position: relative;
+        overflow: visible;
+      isolation: isolate;
+  }
   }
 
   .print-only { display: none; }
@@ -927,7 +985,7 @@
   .export-btn:hover { filter: brightness(1.2); }
 
   .export-modal { max-width: 640px !important; }
-  .export-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .export-body { flex: 1; display: flex; flex-direction: column; }
 
   .export-tabs {
     display: flex;
@@ -950,7 +1008,7 @@
   .export-tab:hover { color: var(--brass); background: rgba(184,134,11,0.05); }
   .export-tab.active { color: var(--amber); border-bottom: 2px solid var(--amber); background: rgba(255,183,0,0.05); }
 
-  .export-content { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .export-content { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
   .export-content.hidden { display: none; }
 
   .export-label {
@@ -1017,7 +1075,7 @@
     display: flex;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   /* LIST PANEL */
@@ -1149,7 +1207,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .cb-new-btn {
@@ -1162,13 +1220,13 @@
     cursor: pointer;
     border-radius: 3px;
     letter-spacing: 0.1em;
-    transition: all 0.1s;
+    transition: 0.1s;
   }
   .cb-new-btn:hover { border-color: var(--brass); color: var(--amber); }
 
   .cb-form {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: visible;
     padding: 14px 18px;
   }
 
@@ -1311,10 +1369,12 @@
     inset: 0;
     background: rgba(0,0,0,0.88);
     z-index: 1000;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     padding: 20px;
     backdrop-filter: blur(4px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .help-overlay.active { display: flex; }
 
@@ -1324,11 +1384,11 @@
     border-radius: 8px;
     width: 100%;
     max-width: 780px;
-    max-height: 88vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(184,134,11,0.15);
-    overflow: hidden;
+    overflow: visible;
+    margin: auto;
   }
 
   .help-header {
@@ -1398,7 +1458,7 @@
   .help-tab:hover { color: var(--brass); background: rgba(184,134,11,0.05); }
   .help-tab.active { color: var(--amber); border-bottom: 2px solid var(--amber); background: rgba(255,183,0,0.05); }
 
-  .help-content { overflow-y: auto; padding: 20px 24px; flex: 1; min-height: 0; }
+  .help-content { overflow-y: visible; padding: 20px 24px; }
   .help-content.hidden { display: none; }
 
   .help-section { margin-bottom: 22px; }
