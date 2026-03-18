@@ -2415,6 +2415,10 @@ function buildKeyboard() {
   });
 
   document.addEventListener('keydown', (e) => {
+    // Don't intercept keypresses when the user is typing in any input/textarea/select
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
     const letter = e.key.toUpperCase();
     const mode = getEncMode();
 
